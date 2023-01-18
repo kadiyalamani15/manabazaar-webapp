@@ -1,0 +1,30 @@
+<%- include("partials/header"); -%>
+
+
+<div class="row d-flex justify-content-around card-deck">
+    <% inventoryList.forEach(function(list) { %>
+            <div class="col-4">
+                <a href="/Inventory/<%=list.category_name%>">
+                        <div class="card">
+                            <img class="card-img-top" src="https://www.lalpathlabs.com/blog/wp-content/uploads/2019/01/Fruits-and-Vegetables.jpg">
+                            <div class="card-body">
+                                <h5 class="card-title text-center"><%=list.category_name%></h5>
+                            </div>
+                        </div>
+                </a>
+            </div>
+    <% }) %>
+    <div class="col-4">
+        <a href="/Inventory/addStock">
+                <div class="card">
+                    <img class="card-img-top" src="">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">+</h5>
+                    </div>
+                </div>
+        </a>
+    </div>
+</div>
+
+
+<%- include("partials/footer"); -%>

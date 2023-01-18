@@ -1,0 +1,103 @@
+{
+    "category" : "Fruits and Vegetables",
+    "fresh vegetables" : {
+        "products" : [{
+            "id" : 10,
+            "name" : "Onion (Ulligadda)",
+            "stock" : 50,
+            "price" : {
+                "MRP unit price" : 29.00,
+                "Selling Price" : 25.00
+            },
+            "unit" : "kg"
+        },{
+            "id" : 11,
+            "name" : "Potato (Aalugadda",
+            "stock" : 25,
+            "price" : {
+                "MRP unit price" : 44.00,
+                "Selling Price" : 40.00
+            },
+            "unit" : "kg"
+        }]
+    },
+    "fresh fruits" : {
+        "products" : [{
+            "id" : 20,
+            "name" : "Imported Daily Apple",
+            "stock" : 30,
+            "price" : {
+                "MRP unit price" : 56.00,
+                "Selling Price" : 50.00
+            },
+            "unit" : " 2 piece"
+        }]
+    }
+};
+{
+    "category" : [
+        {
+            "name" : "Fruits and Vegetables",
+            "sub category" : [
+                {
+                    "name" : "Fresh Fruits",
+                    "products" : [
+                        {
+                            "id" : 10,
+                            "name" : "Apples",
+                            "stock" : 50,
+                            "price" : [
+                                {
+                                    "MRP" : 75.00,
+                                    "SP" : 70.00
+                                }
+                            ],
+                            "units" : "2 piece"
+                        },
+                        {
+                            "id" : 11,
+                            "name" : "Oranges",
+                            "stock" : 40,
+                            "price" : [
+                                {
+                                    "MRP" : 50.00,
+                                    "SP" : 48.00
+                                }
+                            ],
+                            "units" : "2 piece"
+                        }
+                    ]
+                },
+                {
+                    "name" : "Fresh Vegetables",
+                    "products" : [
+                        {
+                            "id" : 20,
+                            "name" : "Spinach",
+                            "stock" : 15,
+                            "price" : [
+                                {
+                                    "MRP" : 22.00,
+                                    "SP" : 20.00
+                                }
+                            ],
+                            "units" : "1 bunch"
+                        },
+                        {
+                            "id" : 21,
+                            "name" : "Brocoli",
+                            "stock" : 10,
+                            "price" : [
+                                {
+                                    "MRP" : 20.00,
+                                    "SP" : 17.00
+                                }
+                            ],
+                            "units" : "1 piece"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

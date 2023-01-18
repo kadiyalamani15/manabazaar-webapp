@@ -1,0 +1,114 @@
+<%- include("partials/header"); -%>
+
+    <h3><%= categoryTitle %></h3>
+    <% var newSubCategoryID = 1; %>
+    <% subCategory.forEach(function(sub_category) { %>
+        <form action="/Inventory/<%=categoryTitle%>" method="post">
+            <h4><%= sub_category.sub_name %>
+                <input type="hidden" name="formName" value="deleteSubCategory">
+                <input type="hidden" name="subCategoryName" value="<%=sub_category.sub_name%>">
+                <button type="submit" class="btn btn-danger">-</button>
+            </h4>
+        </form>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Stock</th>
+                <th scope="col">MRP</th>
+                <th scope="col">SP</th>
+                <th scope="col">Units</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% var lastProductID = ""; %>
+            <% sub_category.products.forEach(function(product) { %>
+                <tr>
+                    <th scope="row"><%= product.id %></th>
+                    <td><%= product.prod_name %></td>
+                    <td><%= product.stock?.toLocaleString("en-IN") %></td>
+                    <td><%= product.price.MRP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) %></td>
+                    <td><%= product.price.SP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) %></td>
+                    <td><%= product.units %></td>
+                </tr>
+                <% lastProductID = product.id + 1 %>
+            <% }) %>
+            <% if (lastProductID === "") { %>
+                <% lastProductID = newSubCategoryID * 100 + ID; %>
+            <% } %>
+                <tr>
+                    <form action="/Inventory/<%=categoryTitle%>" method="POST">
+                        <input type="hidden" name="formName" value="addProduct">
+                        <input type="hidden" name="subCategoryName" value="<%= sub_category.sub_name%>">
+                        <input type="hidden" name="id" value="<%= lastProductID %>">
+                        <th scope="row"><%= lastProductID %></th>
+                        <td><input type="text" name="prod_name" id="lastProductID" placeholder="Name"></td>
+                        <td><input type="text" name="stock" placeholder="Stock"></td>
+                        <td><input type="text" name="price.MRP" placeholder="MRP"></td>
+                        <td><input type="text" name="price.SP" placeholder="SP"></td>
+                        <td><input type="text" name="units" placeholder="Units"></td>
+                        <input type="submit" class="hiddenSubmitBtn" onClick="javascript:void(0)">
+                    </form>
+                </tr>
+        </tbody>
+    </table>
+    <% newSubCategoryID++; %>
+    <% }); %>
+
+    <h4>
+        <form action="/Inventory/<%=categoryTitle%>" method="post">
+            <input type="hidden" name="formName" value="addSubCategory">
+            <input type="hidden" name="categoryName" value="<%=categoryTitle%>">
+            <input type="text" name="newSubCategoryName" placeholder="Add Sub Category">
+            <input type="submit" class="hiddenSubmitBtn" onClick="javascript:void(0)">
+        </form>
+    </h4>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Name</th>
+                <th scope="col">Stock</th>
+                <th scope="col">₹ MRP</th>
+                <th scope="col">₹ SP</th>
+                <th scope="col">Units</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <form action="/Inventory/<%=categoryTitle%>" method="POST">
+                    <input type="hidden" name="formName" value="addProduct">
+                    <th scope="row"><input type="hidden" name="subCategoryName"><%= newSubCategoryID * 100 + ID%></th>
+                    <td><input type="text" name="newProductName" id="<%= newSubCategoryID * 100 + 1000%>" placeholder="Name" disabled></td>
+                    <td><input type="text" name="newProductStock" placeholder="Stock" disabled></td>
+                    <td><input type="text" name="newProductMRP" placeholder="MRP" disabled></td>
+                    <td><input type="text" name="newProductSP" placeholder="SP" disabled></td>
+                    <td><input type="text" name="newProductUnits" placeholder="Units" disabled></td>
+                </form>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.querySelectorAll("table tbody tr:(not:last) td").forEach(function (node) {
+            node.ondblclick = function(){
+                var oldVal = this.innerHTML;
+                var input = document.createElement('input');
+                input.value = oldVal;
+                this.innerHTML = "";
+                input.focus();
+                this.appendChild(input);
+                input.onblur = function(){
+                    var newVal = this.value;
+                    if (oldVal != newVal) {
+                        console.log("Old: " + oldVal + " New: " + newVal);
+                        axios.patch('/Inventory/<%=categoryTitle%>');
+                    };
+                    this.parentNode.innerHTML = newVal;
+                };
+            }
+        })
+    </script>
+
+<%- include("partials/footer"); -%>
