@@ -106,11 +106,13 @@ app.route("/Inventory/:Category")
     .post((req, res) => {
         // ---------------- Add Products (Completed) ----------------
         if (req.body.formName === "addProduct") {
+            // body is being converted to array so that it can be sliced
             let data = req.body;
             data = Object.entries(data);
             let start = data.findIndex(([key]) => key === 'id');
             let end = data.findIndex(([key]) => key === 'units');
             let slicedData = data.slice(start, end + 1);
+            // after slicing it is being converted to JSON so that it can be pushed at desired location
             let jsonData = Object.fromEntries(slicedData);
             console.log(jsonData);
             Grocery.updateOne({ "sub_category.sub_name": req.body.subCategoryName }, {$push: {"sub_category.$.products": jsonData}}, (err, doc) => {

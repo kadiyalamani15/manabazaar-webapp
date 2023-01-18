@@ -91,7 +91,7 @@
     </table>
 
     <script>
-        document.querySelectorAll("table tbody tr:(not:last) td").forEach(function (node) {
+        document.querySelectorAll("table tbody tr:not(:last-child) td").forEach(function (node) {
             node.ondblclick = function(){
                 var oldVal = this.innerHTML;
                 var input = document.createElement('input');
@@ -108,7 +108,7 @@
                     this.parentNode.innerHTML = newVal;
                 };
             }
-        })
+        });
     </script>
 
 <%- include("partials/footer"); -%>
