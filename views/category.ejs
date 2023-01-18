@@ -3,12 +3,18 @@
     <h3><%= categoryTitle %></h3>
     <% var newSubCategoryID = 1; %>
     <% subCategory.forEach(function(sub_category) { %>
-        <h4 class="sub_name"><%= sub_category.sub_name %></h4>
-        <form action="/Inventory/<%=categoryTitle%>" method="post">
-            <input type="hidden" name="formName" value="deleteSubCategory">
-            <input type="hidden" name="subCategoryName" value="<%=sub_category.sub_name%>">
-            <button type="submit" class="btn btn-danger">-</button>
-        </form>
+        <div class="row row-cols-auto">
+            <div class="col">
+                <h4 data-id="<%=sub_category._id%>"><%= sub_category.sub_name %></h4>
+            </div>
+            <div class="col">
+                <form action="/Inventory/<%=categoryTitle%>" method="post">
+                    <input type="hidden" name="formName" value="deleteSubCategory">
+                    <input type="hidden" name="subCategoryName" value="<%=sub_category.sub_name%>">
+                    <button type="submit" class="btn btn-danger">-</button>
+                </form>
+            </div>
+        </div>
     <table class="table table-hover">
         <thead>
             <tr>
@@ -25,11 +31,11 @@
             <% sub_category.products.forEach(function(product) { %>
                 <tr>
                     <th scope="row"><%= product.id %></th>
-                    <td><%= product.prod_name %></td>
-                    <td><%= product.stock?.toLocaleString("en-IN") %></td>
-                    <td><%= product.price.MRP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) %></td>
-                    <td><%= product.price.SP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) %></td>
-                    <td><%= product.units %></td>
+                    <td name="prod_name" data-id="<%=product._id%>" data-sub="<%=sub_category.sub_name%>"><%= product.prod_name %></td>
+                    <td name="stock" data-id="<%=product._id%>" data-sub="<%=sub_category.sub_name%>"><%= product.stock?.toLocaleString("en-IN") %></td>
+                    <td name="price.MRP" data-id="<%=product._id%>" data-sub="<%=sub_category.sub_name%>"><%= product.price.MRP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) %></td>
+                    <td name="price.SP" data-id="<%=product._id%>" data-sub="<%=sub_category.sub_name%>"><%= product.price.SP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) %></td>
+                    <td name="units" data-id="<%=product._id%>" data-sub="<%=sub_category.sub_name%>"><%= product.units %></td>
                 </tr>
                 <% lastProductID = product.id + 1 %>
             <% }) %>
@@ -90,22 +96,37 @@
     </table>
 
     <script>
-        document.querySelectorAll("table tbody tr:not(:last-child) td, .sub_name:not(:last-child)").forEach(function (node) {
+        document.querySelectorAll("table tbody tr:not(:last-child) td, .col h4").forEach(function (node) {
             node.ondblclick = function(){
                 if(event.target.tagName=="INPUT"){
                     return;
                 };
                 var oldVal = this.innerHTML;
+                var tag = this.tagName;
+                var id = this.getAttribute('data-id');
                 var input = document.createElement('input');
                 input.value = oldVal;
                 input.onblur = function(){
                     var newVal = this.value;
                     if (oldVal != newVal) {
                         console.log("Old: " + oldVal + " New: " + newVal);
-                        axios.patch('/Inventory/<%=categoryTitle%>');
+                        if(tag === 'H4') {
+                            axios.patch('/Inventory/<%=categoryTitle%>', {
+                                _id : id,
+                                sub_name : newVal
+                            });
+                        } else {
+                            let attr = this.parentNode.getAttribute('name');
+                            let data = {};
+                            data["_id"] = id;
+                            data[attr] = newVal;
+                            data["sub_name"] = this.parentNode.getAttribute('data-sub')
+                            axios.patch('/Inventory/<%=categoryTitle%>', data);
+                        }
                     };
                     this.parentNode.innerHTML = newVal;
                 };
+
                 this.innerHTML = "";
                 this.appendChild(input);
                 input.focus();
