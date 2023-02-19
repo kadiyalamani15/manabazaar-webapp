@@ -2,29 +2,45 @@
 
 
 <div class="row d-flex justify-content-around card-deck">
-    <% inventoryList.forEach(function(list) { %>
-            <div class="col-4">
-                <a href="/Inventory/<%=list.category_name%>">
-                        <div class="card">
-                            <img class="card-img-top" src="https://www.lalpathlabs.com/blog/wp-content/uploads/2019/01/Fruits-and-Vegetables.jpg">
-                            <div class="card-body">
-                                <h5 class="card-title text-center"><%=list.category_name%></h5>
-                            </div>
+    <% Categories.forEach(function(category) { %>
+        <div class="col-4">
+            <a href="/Inventory/<%=category.name%>">
+                    <div class="card">
+                        <img class="card-img-top" src="https://www.lalpathlabs.com/blog/wp-content/uploads/2019/01/Fruits-and-Vegetables.jpg">
+                        <div class="card-body">
+                            <h5 class="card-title text-center"><%=category.name%></h5>
                         </div>
-                </a>
-            </div>
+                    </div>
+            </a>
+        </div>
     <% }) %>
     <div class="col-4">
-        <a href="/Inventory/addStock">
+        <a onclick="addCategory()">
                 <div class="card">
                     <img class="card-img-top" src="">
                     <div class="card-body">
-                        <h5 class="card-title text-center">+</h5>
+                        <h5 class="card-title text-center" id="addCategory">+</h5>
                     </div>
                 </div>
         </a>
     </div>
 </div>
 
+<script>
+    const addCategory = () => {
+        // Click/Double Click on Input field is ignored
+        if(event.target.tagName=="INPUT"){
+            return;
+        };
+        // Enter is pressed to Submit the New Product Category
+        var input = "<form action='/Inventory/' method='post'><input type='text' name='category' placeholder='New Category'><input type='submit' class='hiddenSubmitBtn' onClick='javascript:void(0)'></form>";
+        $('#addCategory').html(input);
+        // On Blur, Entered data is lost
+        $('input').on('blur', (() => {
+            $('#addCategory').html('+');
+        }));
+        $('input').focus();
+    };
+</script>
 
 <%- include("partials/footer"); -%>
