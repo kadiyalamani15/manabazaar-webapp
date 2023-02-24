@@ -50,7 +50,34 @@ const Category = mongoose.model("Category", categoriesSchema);
 // ---------------- Billing ---------------- 
 app.route("/")
     .get((req, res) => {
-        res.render("home");
+        Product.find((err,products)=> {
+            if(!err) {
+                //console.log(products);
+                Category.find((err, categories)=> {
+                    if(!err) {
+                        //console.log(categories);
+                        let productsByCategory = {};
+                        categories.forEach((category) => {
+                            if(!productsByCategory[category.name]) {
+                                productsByCategory[category.name]=[];
+                            };
+                            products.forEach((product)=> {
+                                if (product.category === category.name) {
+                                    productsByCategory[category.name].push(product);
+                                };
+                            });
+                        });
+                        //console.log(productsByCategory);
+                        res.render("home", {inventory : productsByCategory});
+                    } else {
+                        console.log(err);
+                    }
+                });
+            } else {
+                console.log(err);
+            }
+        });
+        //res.render("home");
     }
 );
 
