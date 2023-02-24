@@ -1,5 +1,41 @@
 <%- include("partials/header"); -%>
 
+<div class="row">
+    <div class="col">
+        <h3>Inventory</h3>
+        <form class="form-inline">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <!-- <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button> -->
+        </form>
+        <%  var iter = 0;
+            Object.keys(inventory).forEach((category) => {
+            const categoryProducts = inventory[category];
+            %>
+            <div class="card" data-bs-toggle="collapse" data-bs-target="#products<%=iter%>">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title"><%= category %></h5>
+                    <img src="https://www.lalpathlabs.com/blog/wp-content/uploads/2019/01/Fruits-and-Vegetables.jpg" style="height:4rem;" alt="Card image cap">
+                </div>
+                <div class="collapse" id="products<%=iter%>">
+                    <ul class="list-group">
+                        <% categoryProducts.forEach((product) => { %>
+                            <li class="list-group-item"><%=product.name%></li>
+                        <% }) %>
+                    </ul>
+                </div>
+            </div>
+            <% iter++; %>
+        <% }) %>
+    </div>
+
+    <div class="col">
+        <h3>Billing</h3>
+        <div class="d-flex justify-content-center align-items-center h-100">
+            <button type="button" class="btn btn-success">NEW ORDER</button>
+        </div>
+    </div>
+</div>
+
 
 
 <%- include("partials/footer"); -%>
