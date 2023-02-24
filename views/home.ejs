@@ -19,7 +19,13 @@
                 <div class="collapse" id="products<%=iter%>">
                     <ul class="list-group">
                         <% categoryProducts.forEach((product) => { %>
-                            <li class="list-group-item"><%=product.name%></li>
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col"><%=product.name%></div>
+                                    <div class="col text-center"><%=product.price.MRP%></div>
+                                    <div class="col text-center"><%=product.price.SP%></div>
+                                </div>
+                            </li>
                         <% }) %>
                     </ul>
                 </div>
