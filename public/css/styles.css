@@ -1,7 +1,29 @@
 a {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .hiddenSubmitBtn {
-    display: none;
+  display: none;
+}
+
+.main::-webkit-scrollbar,
+.wrapper::-webkit-scrollbar,
+.products::-webkit-scrollbar {
+  width: 0;
+}
+
+
+.wrapper .card {
+  max-width: 150px;
+  min-width: 149px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.wrapper .card:first-child {
+  margin-left: 20px;
+}
+
+.wrapper .card:last-child {
+  margin-right: 20px!important;
 }
