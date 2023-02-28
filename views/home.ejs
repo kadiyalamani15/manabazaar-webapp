@@ -8,12 +8,10 @@
 <div class="row h-100 collapse" id="billing">
     
     <div class="col-6 flex-grow-1">
-        <h3>Invoice</h3>
         <!-- Invoice#, Customer Details (Flat#, Contact#, Person), Time, Products, Total, Payment Mode -->
         <% const baseId = 10000; // Starting ID number
         const randomString = Math.random().toString(36).substring(2, 8).toUpperCase(); // Random string of 6 characters
         const invoiceId = `${baseId + Math.floor(Math.random() * 1000)}-${randomString}`; // Combine base ID, random number, and random string %>
-        <p> Invoice #: <%= invoiceId %> </p>
         <% // Create a new Date object
         const now = new Date();
         const options = {
@@ -34,47 +32,53 @@
             time
           ] = dateTimeFormat.format(now).split(", ");
          %>
-        <p> <%= `${weekday}, ${date} ${time}` %></p>
-        <input type="text" name="contact" placeholder="Contact #">
-        <input type="text" name="flat" placeholder="Flat #">
-        <select class="form-select">
-            <option selected>Person</option>
-            <option value="1">Sir</option>
-            <option value="2">Madam</option>
-            <option value="3">Children</option>
-            <option value="3">Driver</option>
-            <option value="3">Maid</option>
-            <option value="3">Security</option>
-            <option value="3">Shop Delivery</option>
-        </select>
-        <table class="table table-hover">
+        <h3>Invoice #: <%= invoiceId %></h3>
+        <div class="d-flex justify-content-between align-items-center my-3">
+            <span style="padding: 12px 0px;"> <%= `${weekday}, ${date}` %></span>
+            <span style="padding: 12px 0px;"> <%= `${time}` %></span>
+        </div>
+        <div class="d-flex justify-content-between align-items-center column-gap-3 my-4">
+            <input type="text" class="form-control" name="contact" placeholder="Contact #">
+            <input type="text" class="form-control" name="flat" placeholder="Flat #">
+            <select class="form-select">
+                <option selected>Person</option>
+                <option value="1">Sir</option>
+                <option value="2">Madam</option>
+                <option value="3">Children</option>
+                <option value="3">Driver</option>
+                <option value="3">Maid</option>
+                <option value="3">Security</option>
+                <option value="3">Shop Delivery</option>
+            </select>
+        </div>
+        <table class="table table-hover my-3">
             <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">QTY</th>
-                    <th scope="col">Each</th>
-                    <th scope="col">Total</th>
+                    <th scope="col" class="text-center">QTY</th>
+                    <th scope="col" class="text-center">Each</th>
+                    <th scope="col" class="text-center">Total</th>
                 </tr>
             </thead>
             <tbody>
 
             </tbody>
         </table>
-        <p>Sub Total: </p>
-        <p>Tax: </p>
-        <p>Total: </p>
-        <select class="form-select">
-            <option selected>Payment</option>
-            <option value="1">Cash</option>
-            <option value="2">UPI</option>
-            <option value="3">Unpaid</option>
-            <option value="3">Item Not Available</option>
-            <option value="3">Item Return</option>
-            <option value="3">Pending Clearance</option>
-        </select>
-        <button type="button" class="btn btn-outline-success">HOLD ORDER</button>
-        <button type="button" class="btn btn-outline-danger">CANCEL ORDER</button>
-        <button type="button" class="btn btn-success">PLACE ORDER</button>
+        <div class="text-end my-3">
+            <p>Sub Total: <span id="subtotal-amount" class="ms-5">0</p>
+            <p>Tax: <span id="tax" class="ms-5">0</p>
+            <h5>Total: <span id="total-amount" class="ms-5">0</h5>
+        </div>
+        <div class="d-flex justify-content-around my-5">
+            <button type="button" class="btn btn-outline-danger w-25">UNPAID</button>
+            <button type="button" class="btn btn-outline-warning w-25">CASH</button>
+            <button type="button" class="btn btn-success w-25">UPI</button>
+        </div>
+        <div class="d-flex justify-content-between">
+            <span>Total Order's Today</span>
+            <span>0</span>
+            <span>0</span>
+        </div>
     </div>
 
     <div class="col-6 overflow-y-auto h-100 products">
