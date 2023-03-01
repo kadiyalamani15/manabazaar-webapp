@@ -18,6 +18,7 @@ subCategoryProducts = data[sub_category]; %>
 			<button type="submit" class="btn btn-danger">Delete Sub Category</button>
 		</form>
 	</div>
+	<!-- TODO: Update Product ID Logic -->
 	<div class="col">
 		<!-- Button trigger modal -->
 		<button
@@ -98,6 +99,7 @@ subCategoryProducts = data[sub_category]; %>
 							data-bs-dismiss="modal">
 							Close
 						</button>
+						<!-- TODO: Submit to DB and Redirect -->
 						<button type="button" class="btn btn-primary">Submit</button>
 					</div>
 				</div>
@@ -143,6 +145,7 @@ subCategoryProducts = data[sub_category]; %>
 			</tr>
 			<!-- Updating New Product ID Computation -->
 			<% lastProductID = product.id + 1; %> <% }) %>
+			<!-- TODO: Consistent width of All Table's Cells -->
 			<!-- Form to Submit New Product Info -->
                 <tr>
                     <form action="/Inventory/<%=categoryTitle%>" method="POST">
@@ -192,6 +195,7 @@ subCategoryProducts = data[sub_category]; %>
 			</tr>
 		</thead>
 		<tbody>
+			<!-- TODO: Consistent width of All Table's Cells -->
 			<!-- Disabled New Product Entry Form Row -->
             <tr>
                 <form action="/Inventory/<%=categoryTitle%>" method="POST">
