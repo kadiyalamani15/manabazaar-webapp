@@ -166,59 +166,55 @@ subCategoryProducts = data[sub_category]; %>
 		<!-- Updating New Product ID Computation -->
 		<% lastProductID = product.id + 1; %> <% }) %>
 		<!-- TODO: Consistent width of All Table's Cells -->
-		<!-- Form to Submit New Product Info -->
+		<!-- Disabled New Product Entry Form Row -->
 		<tr>
 			<form action="/Inventory/<%=categoryTitle%>" method="POST">
 				<input type="hidden" name="formName" value="addProduct" />
-				<!-- If New Product ID was computed then displays it if not compute using iter and Category ID -->
-				<input
-					type="hidden"
-					name="id"
-					value="<%=lastProductID?lastProductID:(iter*100) + 1 + categoryID%>" />
 				<th scope="row">
-					<%= lastProductID?lastProductID:(iter*100) + 1 + categoryID %>
+					<input type="hidden" name="subCategoryName" /><%=
+					lastProductID?lastProductID:(iter*100) + subCategoryProducts.length +
+					1 + categoryID %>
 				</th>
 				<td>
 					<input
 						type="text"
 						class="form-control"
 						name="name"
-						placeholder="Name" />
+						placeholder="Name"
+						disabled />
 				</td>
-				<input type="hidden" name="category" value="<%=categoryTitle%>" />
-				<input type="hidden" name="sub_category" value="<%=sub_category%>" />
 				<td>
 					<input
 						type="text"
 						class="form-control"
 						name="price.MRP"
-						placeholder="MRP" />
+						placeholder="MRP"
+						disabled />
 				</td>
 				<td>
 					<input
 						type="text"
 						class="form-control"
 						name="price.SP"
-						placeholder="SP" />
+						placeholder="SP"
+						disabled />
 				</td>
 				<td>
 					<input
 						type="text"
 						class="form-control"
 						name="quantity"
-						placeholder="Quantity" />
+						placeholder="Quantity"
+						disabled />
 				</td>
 				<td>
 					<input
 						type="text"
 						class="form-control"
 						name="units"
-						placeholder="Units" />
+						placeholder="Units"
+						disabled />
 				</td>
-				<input
-					type="submit"
-					class="hiddenSubmitBtn"
-					onClick="javascript:void(0)" />
 			</form>
 		</tr>
 	</tbody>
