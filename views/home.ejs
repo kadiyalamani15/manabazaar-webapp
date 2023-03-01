@@ -179,8 +179,8 @@
         productSelect.addEventListener("change", (e) => {
             // Get the dataset values for the selected product
             const prodName = e.target.dataset.name;
-            const MRP = parseInt(e.target.dataset.price1);
-            const SP = parseInt(e.target.dataset.price2);
+            const MRP = parseFloat(e.target.dataset.price1);
+            const SP = parseFloat(e.target.dataset.price2);
             // Check if the produst is being added or removed
             if (e.target.checked) {
                 // Add the product to the billing table with default quantity 1
