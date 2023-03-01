@@ -25,83 +25,89 @@ subCategoryProducts = data[sub_category]; %>
 			type="button"
 			class="btn btn-primary"
 			data-bs-toggle="modal"
-			data-bs-target="#productModal">
+			data-bs-target="#productModal<%=iter%>">
 			Add Product
 		</button>
 
-		<div class="modal" id="productModal" tabindex="-1">
+		<div class="modal" id="productModal<%=iter%>" tabindex="-1">
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
-					<div class="modal-header">
-						<h5 class="modal-title">Add Product to <%=sub_category%></h5>
-						<button
-							type="button"
-							class="btn-close"
-							data-bs-dismiss="modal"
-							aria-label="Close"></button>
-					</div>
-					<div class="modal-body">
-						<form>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									class="form-control"
-									id="floatingInputDisabled"
-									placeholder="Product ID" value="<%= lastProductID?lastProductID:(iter*100) + 1 + categoryID %>" disabled/>
-								<label for="floatingInputDisabled">Product ID</label>
-							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									class="form-control"
-									id="floatingInputValue"
-									placeholder="Name" />
-								<label for="floatingInputValue">Name</label>
-							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									class="form-control"
-									id="floatingMRP"
-									placeholder="₹ Marked Retail Price" />
-								<label for="floatingMRP">₹ Marked Retail Price</label>
-							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									class="form-control"
-									id="floatingSP"
-									placeholder="₹ Selling Price" />
-								<label for="floatingSP">₹ Selling Price</label>
-							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									class="form-control"
-									id="floatingQty"
-									placeholder="Stock Quantity" />
-								<label for="floatingQty">Stock Quantity</label>
-							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									class="form-control"
-									id="floatingUnits"
-									placeholder="Units" />
-								<label for="floatingUnits">Units</label>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<button
-							type="button"
-							class="btn btn-secondary"
-							data-bs-dismiss="modal">
-							Close
-						</button>
-						<!-- TODO: Submit to DB and Redirect -->
-						<button type="button" class="btn btn-primary">Submit</button>
-					</div>
+					<form action="/Inventory/<%=categoryTitle%>" method="POST">
+						<input type="hidden" name="formName" value="testingForm">
+                        <input type="hidden" name="id" value="<%=lastProductID?lastProductID:(iter*100) + 1 + categoryID%>">
+                        <input type="hidden" name="category" value="<%=categoryTitle%>">
+						<input type="hidden" name="sub_category" value="<%=sub_category%>">
+						<div class="modal-header">
+							<h5 class="modal-title">Add Product to <%=sub_category%></h5>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+								<div class="form-floating mb-3">
+									<input
+										type="text"
+										class="form-control"
+										id="floatingInputDisabled"
+										placeholder="Product ID" value="<%= lastProductID?lastProductID:(iter*100) + 1 + categoryID %>" disabled/>
+									<label for="floatingInputDisabled">Product ID</label>
+								</div>
+								<div class="form-floating mb-3">
+									<input
+										type="text"
+										class="form-control"
+										id="floatingInputValue"
+										placeholder="Name" />
+									<label for="floatingInputValue">Name</label>
+								</div>
+								<div class="form-floating mb-3">
+									<input
+										type="text"
+										class="form-control"
+										id="floatingMRP"
+										placeholder="₹ Marked Retail Price" />
+									<label for="floatingMRP">₹ Marked Retail Price</label>
+								</div>
+								<div class="form-floating mb-3">
+									<input
+										type="text"
+										class="form-control"
+										id="floatingSP"
+										placeholder="₹ Selling Price" />
+									<label for="floatingSP">₹ Selling Price</label>
+								</div>
+								<div class="form-floating mb-3">
+									<input
+										type="text"
+										class="form-control"
+										id="floatingQty"
+										placeholder="Stock Quantity" />
+									<label for="floatingQty">Stock Quantity</label>
+								</div>
+								<div class="form-floating mb-3">
+									<input
+										type="text"
+										class="form-control"
+										id="floatingUnits"
+										placeholder="Units" />
+									<label for="floatingUnits">Units</label>
+								</div>
+								<!-- TODO: Hidden Submit Button -->
+						</div>
+						<div class="modal-footer">
+							<!-- TODO: On Cancel, Clear Form -->
+							<button
+								type="button"
+								class="btn btn-secondary"
+								data-bs-dismiss="modal">
+								Close
+							</button>
+							<!-- TODO: Submit to DB and Redirect -->
+							<button type="submit" class="btn btn-primary">Submit</button>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
