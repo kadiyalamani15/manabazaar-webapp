@@ -224,6 +224,8 @@ app
 					}
 				}
 			);
+		} else {
+			console.log(req.body);
 		}
 		res.redirect("/Inventory/" + req.params.Category);
 	})
