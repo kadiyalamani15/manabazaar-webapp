@@ -1,6 +1,6 @@
 <%- include("partials/header"); -%>
 
-
+<!-- TODO: Backend Database Modelling -->
 <div class="d-flex justify-content-center align-items-center h-100">
     <button type="button" class="btn btn-success order" data-bs-toggle="collapse" data-bs-target="#billing"
         onclick="toggleButton(this)">NEW ORDER</button>
@@ -33,6 +33,7 @@
             time
         ] = dateTimeFormat.format(now).split(", ");
         %>
+        <!-- TODO: Form Control for table to submit to database -->
         <h3>Invoice #:
             <%= invoiceId %></h3>
         <div class="d-flex justify-content-between align-items-center my-3">
@@ -77,6 +78,7 @@
                 <span id="total-amount" class="ms-5">0
             </h5>
         </div>
+        <!-- TODO: Stock Deduction from Inventory after Submitting, Invoice generation -->
         <div class="d-flex justify-content-around my-5">
             <button type="button" class="btn btn-outline-danger w-25">UNPAID</button>
             <button type="button" class="btn btn-outline-warning w-25">CASH</button>
