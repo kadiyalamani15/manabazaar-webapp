@@ -37,7 +37,7 @@ subCategoryProducts = data[sub_category]; %>
 						class="productForm"
 						action="/Inventory/<%=categoryTitle%>"
 						method="POST">
-						<input type="hidden" name="formName" value="testingForm" />
+						<input type="hidden" name="formName" value="addProduct" />
 						<input
 							type="hidden"
 							name="id"
@@ -105,6 +105,7 @@ subCategoryProducts = data[sub_category]; %>
 							<div class="form-floating mb-3">
 								<input
 									type="text"
+									name="units"
 									class="form-control"
 									id="floatingUnits"
 									placeholder="Units" />
@@ -168,65 +169,12 @@ subCategoryProducts = data[sub_category]; %>
 		</tr>
 		<!-- Updating New Product ID Computation -->
 		<% lastProductID = product.id + 1; %> <% }) %>
-		<!-- TODO: Consistent width of All Table's Cells -->
-		<!-- Disabled New Product Entry Form Row -->
-		<!-- <tr>
-			<form action="/Inventory/<%=categoryTitle%>" method="POST">
-				<input type="hidden" name="formName" value="addProduct" />
-				<th scope="row">
-					<input type="hidden" name="subCategoryName" /><%=
-					lastProductID?lastProductID:(iter*100) + subCategoryProducts.length +
-					1 + categoryID %>
-				</th>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="name"
-						placeholder="Name"
-						disabled />
-				</td>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="price.MRP"
-						placeholder="MRP"
-						disabled />
-				</td>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="price.SP"
-						placeholder="SP"
-						disabled />
-				</td>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="quantity"
-						placeholder="Quantity"
-						disabled />
-				</td>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="units"
-						placeholder="Units"
-						disabled />
-				</td>
-			</form>
-		</tr> -->
 	</tbody>
 </table>
 <% iter++; %> <% }) %>
 <!-- TODO: Decrease the Form's Input Width for Sub Category -->
 <!-- *COMPLETED -->
 <!-- Form to Add New Sub Category -->
-<!-- <h4 class="sub_name"> -->
 <form class="col-3 py-3" action="/Inventory/<%=categoryTitle%>" method="post">
 	<input type="hidden" name="formName" value="addSubCategory" />
 	<input type="hidden" name="categoryName" value="<%=categoryTitle%>" />
@@ -237,7 +185,7 @@ subCategoryProducts = data[sub_category]; %>
 		placeholder="Add Sub Category" />
 	<input type="submit" class="hiddenSubmitBtn" onclick="javascript:void(0)" />
 </form>
-<!-- </h4> -->
+
 <table class="table table-hover mb-3">
 	<!-- Table Column Headers -->
 	<thead>
@@ -250,59 +198,6 @@ subCategoryProducts = data[sub_category]; %>
 			<th scope="col" class="text-center col-2">Units</th>
 		</tr>
 	</thead>
-	<tbody>
-		<!-- TODO: Consistent width of All Table's Cells -->
-		<!-- Disabled New Product Entry Form Row -->
-		<!-- <tr>
-			<form action="/Inventory/<%=categoryTitle%>" method="POST">
-				<input type="hidden" name="formName" value="addProduct" />
-				<th scope="row">
-					<input type="hidden" name="subCategoryName" /><%=
-					(Object.keys(data).length + 1) * 100 + categoryID + 1 %>
-				</th>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="name"
-						placeholder="Name"
-						disabled />
-				</td>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="price.MRP"
-						placeholder="MRP"
-						disabled />
-				</td>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="price.SP"
-						placeholder="SP"
-						disabled />
-				</td>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="quantity"
-						placeholder="Quantity"
-						disabled />
-				</td>
-				<td>
-					<input
-						type="text"
-						class="form-control"
-						name="units"
-						placeholder="Units"
-						disabled />
-				</td>
-			</form>
-		</tr> -->
-	</tbody>
 </table>
 
 <!-- Edit Product & Sub Category  -->
