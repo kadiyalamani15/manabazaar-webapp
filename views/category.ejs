@@ -75,41 +75,45 @@ subCategoryProducts = data[sub_category]; %>
 									placeholder="Name" />
 								<label for="floatingInputValue">Name</label>
 							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									name="price.MRP"
-									class="form-control"
-									id="floatingMRP"
-									placeholder="₹ Marked Retail Price" />
-								<label for="floatingMRP">₹ Marked Retail Price</label>
+							<div class="row g-2">
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="price.MRP"
+										class="form-control"
+										id="floatingMRP"
+										placeholder="₹ Marked Retail Price" />
+									<label for="floatingMRP">₹ Marked Retail Price</label>
+								</div>
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="price.SP"
+										class="form-control"
+										id="floatingSP"
+										placeholder="₹ Selling Price" />
+									<label for="floatingSP">₹ Selling Price</label>
+								</div>
 							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									name="price.SP"
-									class="form-control"
-									id="floatingSP"
-									placeholder="₹ Selling Price" />
-								<label for="floatingSP">₹ Selling Price</label>
-							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									name="quantity"
-									class="form-control"
-									id="floatingQty"
-									placeholder="Stock Quantity" />
-								<label for="floatingQty">Stock Quantity</label>
-							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
-									name="units"
-									class="form-control"
-									id="floatingUnits"
-									placeholder="Units" />
-								<label for="floatingUnits">Units</label>
+							<div class="row g-2">
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="quantity"
+										class="form-control"
+										id="floatingQty"
+										placeholder="Stock Quantity" />
+									<label for="floatingQty">Stock Quantity</label>
+								</div>
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="units"
+										class="form-control"
+										id="floatingUnits"
+										placeholder="Units" />
+									<label for="floatingUnits">Units</label>
+								</div>
 							</div>
 						</div>
 						<div class="modal-footer">
