@@ -19,6 +19,7 @@ subCategoryProducts = data[sub_category]; %>
 		</form>
 	</div>
 	<!-- TODO: Update Product ID Logic -->
+	<!-- *COMPLETED -->
 	<div class="col">
 		<!-- Button trigger modal -->
 		<button
@@ -34,7 +35,7 @@ subCategoryProducts = data[sub_category]; %>
 				<div class="modal-content">
 					<form action="/Inventory/<%=categoryTitle%>" method="POST">
 						<input type="hidden" name="formName" value="testingForm">
-                        <input type="hidden" name="id" value="<%=lastProductID?lastProductID:(iter*100) + 1 + categoryID%>">
+                        <input type="hidden" name="id" value="<%=lastProductID?lastProductID:(iter*100) + subCategoryProducts.length + 1 + categoryID%>">
                         <input type="hidden" name="category" value="<%=categoryTitle%>">
 						<input type="hidden" name="sub_category" value="<%=sub_category%>">
 						<div class="modal-header">
@@ -51,7 +52,7 @@ subCategoryProducts = data[sub_category]; %>
 										type="text"
 										class="form-control"
 										id="floatingInputDisabled"
-										placeholder="Product ID" value="<%= lastProductID?lastProductID:(iter*100) + 1 + categoryID %>" disabled/>
+										placeholder="Product ID" value="<%= lastProductID?lastProductID:(iter*100) + subCategoryProducts.length + 1 + categoryID %>" disabled/>
 									<label for="floatingInputDisabled">Product ID</label>
 								</div>
 								<div class="form-floating mb-3">
