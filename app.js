@@ -40,10 +40,18 @@ const categoriesSchema = {
 	sub_category: Array,
 };
 
+// ----------------  Intitializing Flats Schema ----------------
+
+const flatsSchema = {
+	flat: String,
+};
+
 // ---------------- Intializing / Accessing Collection from Test Database ----------------
 const Product = mongoose.model("Product", productsSchema);
 
 const Category = mongoose.model("Category", categoriesSchema);
+
+const Flat = mongoose.model("Flat", flatsSchema);
 
 // ---------------- APP ROUTES ----------------
 
@@ -270,6 +278,30 @@ app
 			});
 		}
 	});
+
+app.post("/getFlats", async (req, res) => {
+	let payload = req.body.payload.trim();
+	let regex1 = /([a-zA-Z]+)(\d+)/;
+	let regex2 = /^([a-zA-Z])\s+[0-9]+$/;
+	if (regex1.test(payload)) {
+		console.log("Match! " + payload);
+		payload = payload.replace(/^([a-zA-Z])(\d+)/, "$1 $2");
+		console.log("Regex: " + payload);
+	} else if (regex2.test(payload)) {
+		console.log("Match! " + payload);
+		payload = payload.replace(/([a-zA-Z])(\s+)?(\d+)/, "$1 $3");
+		console.log("Regex: " + payload);
+	} else {
+		console.log("No Match! " + payload);
+	}
+	let search = await Flat.find({
+		flat: { $regex: new RegExp(payload, "i") },
+	})
+		.limit(3)
+		.exec();
+	console.log(search);
+	res.send({ payload: search });
+});
 
 // ---------------- PORT ----------------
 app.listen(3000, function () {
