@@ -284,15 +284,15 @@ app.post("/getFlats", async (req, res) => {
 	let regex1 = /([a-zA-Z]+)(\d+)/;
 	let regex2 = /^([a-zA-Z])\s+[0-9]+$/;
 	if (regex1.test(payload)) {
-		console.log("Match! " + payload);
+		// console.log("Match! " + payload);
 		payload = payload.replace(/^([a-zA-Z])(\d+)/, "$1 $2");
-		console.log("Regex: " + payload);
+		// console.log("Regex: " + payload);
 	} else if (regex2.test(payload)) {
-		console.log("Match! " + payload);
+		// console.log("Match! " + payload);
 		payload = payload.replace(/([a-zA-Z])(\s+)?(\d+)/, "$1 $3");
-		console.log("Regex: " + payload);
+		// console.log("Regex: " + payload);
 	} else {
-		console.log("No Match! " + payload);
+		// console.log("No Match! " + payload);
 	}
 	let search = await Flat.find({
 		flat: { $regex: new RegExp(payload, "i") },
