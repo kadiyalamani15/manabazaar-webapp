@@ -299,7 +299,7 @@ app.post("/getFlats", async (req, res) => {
 	})
 		.limit(3)
 		.exec();
-	console.log(search);
+	// console.log(search);
 	res.send({ payload: search });
 });
 
