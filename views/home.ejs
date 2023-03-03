@@ -3,7 +3,7 @@
 <!-- TODO: Backend Database Modelling -->
 <div class="d-flex justify-content-center align-items-center h-100">
     <button type="button" class="btn btn-success order" data-bs-toggle="collapse" data-bs-target="#billing"
-        onclick="toggleButton(this)">NEW ORDER</button>
+        onclick="removeElementFromDOM('.order')">NEW ORDER</button>
 </div>
 
 <div class="row h-100 collapse" id="billing">
@@ -13,96 +13,83 @@
         <% const baseId = 10000; // Starting ID number
         const randomString = Math.random().toString(36).substring(2, 8).toUpperCase(); // Random string of 6 characters
         const invoiceId = `${baseId + Math.floor(Math.random() * 1000)}-${randomString}`; // Combine base ID, random number, and random string %>
-        <% // Create a new Date object
-        const now = new Date();
-        const options = {
-            timeZone: "Asia/Kolkata",
-            hour12: false,
-            weekday: "long",
-            year: "numeric",
-            month: "numeric",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            second: "numeric"
-        };
-        const dateTimeFormat = new Intl.DateTimeFormat("en-IN", options);
-        var [
-            weekday,
-            date,
-            time
-        ] = dateTimeFormat.format(now).split(", ");
-        %>
         <!-- TODO: Form Control for table to submit to database -->
-        <h3>Invoice #:
-            <%= invoiceId %></h3>
+        <!-- *Completed -->
+        <h3>Invoice:
+            #<%= invoiceId %></h3>
         <div class="d-flex justify-content-between align-items-center my-3">
-            <span style="padding: 12px 0px;">
-                <%= `${weekday}, ${date}` %></span>
-            <span style="padding: 12px 0px;">
-                <%= `${time}` %></span>
+            <span id="dayDate" style="padding: 12px 0px;"></span>
+            <!-- TODO: Time should be dynamically update as billing appears on screen -->
+            <!-- * Completed -->
+            <span id="time" style="padding: 12px 0px;"></span>
         </div>
-        <div class="row g-2 my-4">
-            <!-- TODO: Search for Flat# -->
-            <div class="col">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="floatingInputFlat" name="flat" placeholder="Flat #" required>
-                    <label for="floatingInputFlat">Flat#</label>
-                </div>
-                <ul class="list-group" id="searchFlat">
+        <form id="invoiceForm" action="/" method="post">
+            <input type="hidden" name="invoiceId" value="#<%=invoiceId%>">
+            <div class="row g-2 my-4">
+                <!-- TODO: Search for Flat# -->
+                <!-- *Completed -->
+                <div class="col">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="floatingInputFlat" name="flat" placeholder="Flat #" required autocomplete="off">
+                        <label for="floatingInputFlat">Flat#</label>
+                    </div>
+                    <ul class="list-group" id="searchFlat">
 
-                </ul>
-            </div>
-            <div class="col">
-                <div class="form-floating">
-                    <input type="tel" class="form-control" id="floatingInputContact" name="contact" placeholder="Contact #">
-                    <label for="floatingInputContact">Contact</label>
+                    </ul>
+                </div>
+                <div class="col">
+                    <div class="form-floating">
+                        <input type="tel" class="form-control" id="floatingInputContact" name="contact" placeholder="Contact #">
+                        <label for="floatingInputContact">Contact</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-floating">
+                        <select class="form-select" id="floatingSelectPerson" name="person" required>
+                            <option selected disabled value="">Open this</option>
+                            <option value="1">Sir</option>
+                            <option value="2">Madam</option>
+                            <option value="3">Children</option>
+                            <option value="4">Driver</option>
+                            <option value="5">Maid</option>
+                            <option value="6">Security</option>
+                            <option value="7">Shop Delivery</option>
+                        </select>
+                        <label for="floatingSelectPerson">Person</label>
+                    </div>
                 </div>
             </div>
-            <div class="col">
-                <div class="form-floating">
-                    <select class="form-select" id="floatingSelectPerson" required>
-                        <option selected disabled>Open this</option>
-                        <option value="1">Sir</option>
-                        <option value="2">Madam</option>
-                        <option value="3">Children</option>
-                        <option value="3">Driver</option>
-                        <option value="3">Maid</option>
-                        <option value="3">Security</option>
-                        <option value="3">Shop Delivery</option>
-                    </select>
-                    <label for="floatingSelectPerson">Person</label>
-                </div>
+            <table class="table table-hover billing my-3">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">QTY</th>
+                        <th scope="col">Each</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <!-- ? TODO: How to design the data model to submit along with the form -->
+                <tbody></tbody>
+            </table>
+            <div class="text-end my-3">
+                <!-- <p>Sub Total:
+                    <span id="subtotal-amount" class="ms-5">0
+                </p>
+                <p>Tax:
+                    <span id="tax" class="ms-5">0
+                </p> -->
+                <h5>Total:
+                    <span id="total-amount" class="ms-5">0
+                </h5>
             </div>
-        </div>
-        <table class="table table-hover billing my-3">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col" >QTY</th>
-                    <th scope="col" >Each</th>
-                    <th scope="col" >Total</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <div class="text-end my-3">
-            <!-- <p>Sub Total:
-                <span id="subtotal-amount" class="ms-5">0
-            </p>
-            <p>Tax:
-                <span id="tax" class="ms-5">0
-            </p> -->
-            <h5>Total:
-                <span id="total-amount" class="ms-5">0
-            </h5>
-        </div>
-        <!-- TODO: Stock Deduction from Inventory after Submitting, Invoice generation -->
-        <div class="d-flex justify-content-around my-5">
-            <button type="button" class="btn btn-outline-danger w-25">UNPAID</button>
-            <button type="button" class="btn btn-outline-warning w-25">CASH</button>
-            <button type="button" class="btn btn-success w-25">UPI</button>
-        </div>
+            <!-- TODO: Stock Deduction from Inventory after Submitting, Invoice generation -->
+            <div class="d-flex justify-content-around my-5">
+                <button type="submit" class="btn btn-outline-danger w-25" name="paymentMode" value="1">UNPAID</button>
+                <button type="submit" class="btn btn-outline-warning w-25" name="paymentMode" value="2">CASH</button>
+                <button type="submit" class="btn btn-success w-25" name="paymentMode" value="3">UPI</button>
+                <input id="billingStartTime" type="hidden" name="billTime.start">
+            </div>
+        </form>
         <div class="d-flex justify-content-between">
             <span>Total Order's Today</span>
             <span>0</span>
@@ -157,6 +144,28 @@
     // Add a click event listener to the button
     document.querySelector('.order').addEventListener('click', function () { // Toggle the button visibility
         this.parentNode.remove();
+        // Create a new Date object
+        const now = new Date();
+        const options = {
+            timeZone: "Asia/Kolkata",
+            hour12: false,
+            weekday: "long",
+            year: "numeric",
+            month: "numeric",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric"
+        };
+        const dateTimeFormat = new Intl.DateTimeFormat("en-IN", options);
+        var [
+            weekday,
+            date,
+            time
+        ] = dateTimeFormat.format(now).split(", ");
+        document.getElementById("dayDate").innerHTML = weekday + " " + date;
+        document.getElementById("time").innerHTML = time;
+        document.getElementById("billingStartTime").value = time; 
     });
 
     //Get the Search Field of Flats
@@ -186,6 +195,7 @@
                 listItem.classList.add("list-group-item");
                 listItem.classList.add("list-group-item-action");
                 listItem.setAttribute("onclick", "displayFlat('"+item.flat+"')");
+                // TODO: Computation has to be changed for expected results
                 // Display matched part in bold text
                 // let flat = "<b>" + item.flat.substr(0, inputValue.length) + "</b>";
                 // flat += item.flat.substr(inputValue.length);
