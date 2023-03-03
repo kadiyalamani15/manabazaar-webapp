@@ -1,59 +1,68 @@
 a {
-  text-decoration: none;
+	text-decoration: none;
 }
 
 .hiddenSubmitBtn {
-  display: none;
+	display: none;
 }
 
 .main::-webkit-scrollbar,
 .wrapper::-webkit-scrollbar,
 .products::-webkit-scrollbar {
-  width: 0;
+	width: 0;
 }
 
 input[type="checkbox"] {
-  -webkit-appearance: none;
-  position: relative;
-  cursor: pointer;
+	-webkit-appearance: none;
+	position: relative;
+	cursor: pointer;
 }
 
 input[type="checkbox"]:after {
-  position: absolute;
-  font-family: "Font Awesome 6 Free";
-  font-weight: 400;
-  content: "\f111";
-  font-size: 16px;
-  top: 10px;
-  right: 10px;
-  color: #e2e6f3;
+	position: absolute;
+	font-family: "Font Awesome 6 Free";
+	font-weight: 400;
+	content: "\f111";
+	font-size: 16px;
+	top: 10px;
+	right: 10px;
+	color: #e2e6f3;
 }
 
-input[type="checkbox"]:checked{
-  border: 3px solid #008741;
+input[type="checkbox"]:checked {
+	border: 3px solid #008741;
 }
 
-input[type="checkbox"]:checked:after{
-  font-weight: 900;
-  content: "\f058";
-  color: #008741;
+input[type="checkbox"]:checked:after {
+	font-weight: 900;
+	content: "\f058";
+	color: #008741;
 }
 
-.wrapper{
-  height: 220px;
+.wrapper {
+	height: 220px;
 }
 
 .wrapper .card {
-  max-width: 150px;
-  min-width: 149px;
-  text-align: center;
-  border-radius: 4px;
+	max-width: 150px;
+	min-width: 149px;
+	text-align: center;
+	border-radius: 4px;
 }
 
 .wrapper .card:first-child {
-  margin-left: 20px;
+	margin-left: 20px;
 }
 
 .wrapper .card:last-child {
-  margin-right: 20px!important;
+	margin-right: 20px !important;
+}
+
+#searchFlat .list-group-item:first-child {
+	border-radius: 0;
+	border-top: 0;
+}
+
+#searchFlat .list-group-item:not(:last-child) {
+	border-bottom: 0;
 }
