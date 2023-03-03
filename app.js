@@ -102,7 +102,14 @@ app
 		const dateTimeFormat = new Intl.DateTimeFormat("en-IN", options);
 		var [time] = dateTimeFormat.format(now).split(", ");
 		req.body["billTime.end"] = time;
-		req.body["billTime.taken"] = time - req.body["billingTime.start"];
+		// Convert the time values to milliseconds since midnight
+		const startTimeMs = Date.parse(`01/01/1970 ${req.body["billTime.start"]}`);
+		const endTimeMs = Date.parse(`01/01/1970 ${req.body["billTime.end"]}`);
+		//calculate the time taken in milliseconds
+		const timeTakenMs = endTimeMs - startTimeMs;
+		// conver the time taken back to hh:mm:ss format
+		const timeTaken = new Date(timeTakenMs).toISOString().substr(11, 8);
+		req.body["billTime.taken"] = timeTaken;
 		console.log(req.body);
 		// TODO: Submit data to the database
 		res.redirect("/");
