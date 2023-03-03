@@ -56,36 +56,57 @@ const Flat = mongoose.model("Flat", flatsSchema);
 // ---------------- APP ROUTES ----------------
 
 // ---------------- Billing ----------------
-app.route("/").get((req, res) => {
-	Product.find((err, products) => {
-		if (!err) {
-			//console.log(products);
-			Category.find((err, categories) => {
-				if (!err) {
-					//console.log(categories);
-					let productsByCategory = {};
-					categories.forEach((category) => {
-						if (!productsByCategory[category.name]) {
-							productsByCategory[category.name] = [];
-						}
-						products.forEach((product) => {
-							if (product.category === category.name) {
-								productsByCategory[category.name].push(product);
+app
+	.route("/")
+	.get((req, res) => {
+		Product.find((err, products) => {
+			if (!err) {
+				//console.log(products);
+				Category.find((err, categories) => {
+					if (!err) {
+						//console.log(categories);
+						let productsByCategory = {};
+						categories.forEach((category) => {
+							if (!productsByCategory[category.name]) {
+								productsByCategory[category.name] = [];
 							}
+							products.forEach((product) => {
+								if (product.category === category.name) {
+									productsByCategory[category.name].push(product);
+								}
+							});
 						});
-					});
-					//console.log(productsByCategory);
-					res.render("home", { inventory: productsByCategory });
-				} else {
-					console.log(err);
-				}
-			});
-		} else {
-			console.log(err);
-		}
+						//console.log(productsByCategory);
+						res.render("home", { inventory: productsByCategory });
+					} else {
+						console.log(err);
+					}
+				});
+			} else {
+				console.log(err);
+			}
+		});
+		//res.render("home");
+	})
+	.post((req, res) => {
+		// TODO: Compute the timestamp and the elapsed time of submissions
+		// *Completed
+		const now = new Date();
+		const options = {
+			timeZone: "Asia/Kolkata",
+			hour12: false,
+			hour: "numeric",
+			minute: "numeric",
+			second: "numeric",
+		};
+		const dateTimeFormat = new Intl.DateTimeFormat("en-IN", options);
+		var [time] = dateTimeFormat.format(now).split(", ");
+		req.body["billTime.end"] = time;
+		req.body["billTime.taken"] = time - req.body["billingTime.start"];
+		console.log(req.body);
+		// TODO: Submit data to the database
+		res.redirect("/");
 	});
-	//res.render("home");
-});
 
 // ---------------- Orders ----------------
 app.route("/Orders").get((req, res) => {
