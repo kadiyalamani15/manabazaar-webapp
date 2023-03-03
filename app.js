@@ -142,6 +142,7 @@ app
 		req.body.invoiceDate = new Date();
 		// console.log(req.body);
 		// TODO: Submit data to the database
+		// *Completed
 		Invoice.create(req.body, (err, doc) => {
 			if (err) {
 				console.log(err);
@@ -289,6 +290,17 @@ app
 			Category.updateOne(
 				{ name: req.params.Category },
 				{ $pull: { sub_category: req.body.subCategoryName } },
+				(err, doc) => {
+					if (err) {
+						console.log(err);
+					} else {
+						console.log("Document Updated: ", doc);
+					}
+				}
+			);
+			// TODO: Delete corresponding sub_category products from products collection
+			Product.deleteMany(
+				{ sub_category: req.body.subCategoryName },
 				(err, doc) => {
 					if (err) {
 						console.log(err);
