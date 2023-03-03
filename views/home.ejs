@@ -2,8 +2,7 @@
 
 <!-- TODO: Backend Database Modelling -->
 <div class="d-flex justify-content-center align-items-center h-100">
-    <button type="button" class="btn btn-success order" data-bs-toggle="collapse" data-bs-target="#billing"
-        onclick="removeElementFromDOM('.order')">NEW ORDER</button>
+    <button type="button" class="btn btn-success order" data-bs-toggle="collapse" data-bs-target="#billing">NEW ORDER</button>
 </div>
 
 <div class="row h-100 collapse" id="billing">
@@ -24,7 +23,7 @@
             <span id="time" style="padding: 12px 0px;"></span>
         </div>
         <form id="invoiceForm" action="/" method="post">
-            <input type="hidden" name="invoiceId" value="#<%=invoiceId%>">
+            <input type="hidden" name="invoiceId" value="#<%=invoiceId%>" required>
             <div class="row g-2 my-4">
                 <!-- TODO: Search for Flat# -->
                 <!-- *Completed -->
@@ -81,6 +80,8 @@
                 <h5>Total:
                     <span id="total-amount" class="ms-5">0
                 </h5>
+                <input id="invoiceTotal" type="hidden" name="invoiceTotal" value="" required>
+                <input id="billedProducts" type="hidden" name="prods" value="" required>
             </div>
             <!-- TODO: Stock Deduction from Inventory after Submitting, Invoice generation -->
             <div class="d-flex justify-content-around my-5">
@@ -229,12 +230,13 @@
     // Define a function to update the billing table and total amount
     function updateBilling() {
         let totalAmount = 0;
+        let prods = [];
         billingTableBody.innerHTML = '';
         // Loop through all selected products
         productSelects.forEach((product) => {
             if (product.checked) {
                 const prodName = product.dataset.name;
-                const prodMRP = product.dataset.price1;
+                const prodMRP = parseFloat(product.dataset.price1);
                 const prodSP = parseFloat(product.dataset.price2);
                 const prodQty = product.dataset.qty;
                 const prodTotal = prodSP * prodQty;
@@ -250,12 +252,18 @@
                     <td>${prodSP?.toLocaleString("en-IN", {style:'currency', currency:'INR'})}</td>
                     <td>${prodTotal?.toLocaleString("en-IN", {style:'currency', currency:'INR'})}</td>`;
                 billingTableBody.appendChild(newRow);
+                // Add the Product Row Info to prods
+                prods.push({name: prodName, 'price.MRP': prodMRP, 'price.SP': prodSP, qty: prodQty, subTotal: prodTotal});
                 // Add the product total to the total amount
                 totalAmount += prodTotal;
             }
         });
+        // Update the Billed Products for Invoice Submission
+        document.getElementById('billedProducts').value = prods;
         // Update the total amount in the billing table
         totalAmountSpan.textContent = totalAmount?.toLocaleString("en-IN", {style:'currency', currency:'INR'});
+        // Update the Invoice Total Amount for Submission
+        document.getElementById('invoiceTotal').value = totalAmount;
     }
 
     // Add event listeners to the product checkboxes
