@@ -46,12 +46,36 @@ const flatsSchema = {
 	flat: String,
 };
 
+// ----------------  Intitializing Invoice Schema ----------------
+
+const invoicesSchema = {
+	invoiceId: String,
+	invoiceDate: {
+		type: Date,
+		required: true,
+	},
+	flat: String,
+	contact: String,
+	person: Number,
+	invoiceTotal: Number,
+	prods: Array,
+	paymentMode: Number,
+	paymentDefault: Boolean,
+	billTime: {
+		start: String,
+		end: String,
+		taken: String,
+	},
+};
+
 // ---------------- Intializing / Accessing Collection from Test Database ----------------
 const Product = mongoose.model("Product", productsSchema);
 
 const Category = mongoose.model("Category", categoriesSchema);
 
 const Flat = mongoose.model("Flat", flatsSchema);
+
+const Invoice = mongoose.model("Invoice", invoicesSchema);
 
 // ---------------- APP ROUTES ----------------
 
@@ -110,8 +134,21 @@ app
 		// conver the time taken back to hh:mm:ss format
 		const timeTaken = new Date(timeTakenMs).toISOString().substr(11, 8);
 		req.body["billTime.taken"] = timeTaken;
-		console.log(req.body);
+		req.body.paymentDefault = true;
+		if (req.body.paymentMode == "2" || req.body.paymentMode == "3") {
+			req.body.paymentDefault = false;
+		}
+		req.body.prods = JSON.parse(req.body.prods);
+		req.body.invoiceDate = new Date();
+		// console.log(req.body);
 		// TODO: Submit data to the database
+		Invoice.create(req.body, (err, doc) => {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log("Document Saved:", doc);
+			}
+		});
 		res.redirect("/");
 	});
 
