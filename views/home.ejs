@@ -277,7 +277,7 @@
             }
         });
         // Update the Billed Products for Invoice Submission
-        document.getElementById('billedProducts').value = prods;
+        document.getElementById('billedProducts').value = JSON.stringify(prods);
         // Update the total amount in the billing table
         totalAmountSpan.textContent = totalAmount?.toLocaleString("en-IN", {style:'currency', currency:'INR'});
         // Update the Invoice Total Amount for Submission
