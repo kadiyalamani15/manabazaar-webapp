@@ -155,7 +155,16 @@ app
 
 // ---------------- Orders ----------------
 app.route("/Orders").get((req, res) => {
-	res.render("orders");
+	Invoice.find()
+		.sort({ invoiceDate: -1 })
+		.exec((err, invoice) => {
+			if (!err) {
+				res.render("orders", { invoices: invoice });
+				// console.log(invoice);
+			} else {
+				console.log(err);
+			}
+		});
 });
 
 // ---------------- Credits ----------------
