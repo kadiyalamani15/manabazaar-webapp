@@ -171,7 +171,22 @@ app.route("/Orders").get((req, res) => {
 });
 
 app.route("/Invoices/:invoiceId").post((req, res) => {
-	console.log("#" + req.params.invoiceId);
+	// console.log("#" + req.params.invoiceId);
+	req.params.invoiceId = "#" + req.params.invoiceId;
+	Invoice.updateOne(
+		{ invoiceId: req.params.invoiceId },
+		{
+			paymentDefault: false,
+			paymentDate: new Date(),
+			paymentMode: req.body.paymentMode,
+		}
+	).exec((err, inv) => {
+		if (!err) {
+			console.log(inv);
+		} else {
+			console.log(err);
+		}
+	});
 	res.redirect("/Orders");
 });
 
