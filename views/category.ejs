@@ -207,13 +207,13 @@ subCategoryProducts = data[sub_category]; %>
 <!-- Edit Product & Sub Category  -->
 <script>
 	document
-		.querySelectorAll("table tbody tr:not(:last-child) td, .col h4")
+		.querySelectorAll("table tbody tr td, .col h4")
 		.forEach(function (node) {
 			node.ondblclick = function () {
 				if (event.target.tagName === "INPUT") {
 					return;
 				}
-				var oldVal = this.innerHTML;
+				var oldVal = this.innerHTML.trim();
 				var input = document.createElement("input");
 				input.value = oldVal;
 				var tag = this.tagName;
