@@ -97,14 +97,19 @@ date.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year:
 						<% }) %>
 					</tbody>
 				</table>
-			</div>
-			<div class="modal-footer">
 				<div class="text-end my-3">
 					<h6>
 						Total: <%=invoice.invoiceTotal?.toLocaleString("en-IN",
 						{style:"currency", currency: "INR"})%>
 					</h6>
 				</div>
+			</div>
+			<div class="modal-footer">
+				<% if (invoice.paymentMode === 1) {%>
+				<form action="/Invoices/<%=invoice.invoiceId.slice(1)%>" method="post">
+					<button type="submit" class="btn btn-primary">Clear Due</button>
+				</form>
+				<% } %>
 			</div>
 		</div>
 	</div>
