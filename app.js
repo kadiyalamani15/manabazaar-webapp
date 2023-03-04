@@ -61,6 +61,7 @@ const invoicesSchema = {
 	prods: Array,
 	paymentMode: Number,
 	paymentDefault: Boolean,
+	paymentDate: Date,
 	billTime: {
 		start: String,
 		end: String,
@@ -134,9 +135,11 @@ app
 		// conver the time taken back to hh:mm:ss format
 		const timeTaken = new Date(timeTakenMs).toISOString().substr(11, 8);
 		req.body["billTime.taken"] = timeTaken;
+		req.body.paymentDate = "";
 		req.body.paymentDefault = true;
 		if (req.body.paymentMode == "2" || req.body.paymentMode == "3") {
 			req.body.paymentDefault = false;
+			req.body.paymentDate = new Date();
 		}
 		req.body.prods = JSON.parse(req.body.prods);
 		req.body.invoiceDate = new Date();
