@@ -170,6 +170,11 @@ app.route("/Orders").get((req, res) => {
 		});
 });
 
+app.route("/Invoices/:invoiceId").post((req, res) => {
+	console.log("#" + req.params.invoiceId);
+	res.redirect("/Orders");
+});
+
 // ---------------- Credits ----------------
 app.route("/Credits").get((req, res) => {
 	res.render("credits");
