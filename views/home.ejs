@@ -111,9 +111,9 @@
             </div>
         </form>
         <div class="d-flex justify-content-between">
-            <span>Total Order's Today</span>
-            <span>0</span>
-            <span>0</span>
+            <h6>Today's Orders</h6>
+            <h6><%=todaySalesCount%></h6>
+            <h6><%=todaySalesAmoutTotal?.toLocaleString("en-IN", {style: 'currency', currency:'INR'})%></h6>
         </div>
     </div>
 
