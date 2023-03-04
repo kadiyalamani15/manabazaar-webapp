@@ -272,7 +272,7 @@
                     <td>${prodTotal?.toLocaleString("en-IN", {style:'currency', currency:'INR'})}</td>`;
                 billingTableBody.appendChild(newRow);
                 // Add the Product Row Info to prods
-                prods.push({name: prodName, 'price.MRP': prodMRP, 'price.SP': prodSP, qty: prodQty, subTotal: prodTotal});
+                prods.push({name: prodName, price : {MRP : prodMRP, SP: prodSP}, qty: prodQty, subTotal: prodTotal});
                 // Add the product total to the total amount
                 totalAmount += prodTotal;
             }
