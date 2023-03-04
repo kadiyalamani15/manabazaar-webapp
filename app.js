@@ -170,7 +170,7 @@ app.route("/Orders").get((req, res) => {
 		});
 });
 
-app.route("/Invoices/:invoiceId").post((req, res) => {
+app.route("/Invoices/Due/:invoiceId").post((req, res) => {
 	// console.log("#" + req.params.invoiceId);
 	req.params.invoiceId = "#" + req.params.invoiceId;
 	Invoice.updateOne(

@@ -106,7 +106,9 @@ date.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year:
 			</div>
 			<div class="modal-footer">
 				<% if (invoice.paymentMode === 1) {%>
-				<form action="/Invoices/<%=invoice.invoiceId.slice(1)%>" method="post">
+				<form
+					action="/Invoices/Due/<%=invoice.invoiceId.slice(1)%>"
+					method="post">
 					<span>Clear Due: </span>
 					<button
 						type="submit"
