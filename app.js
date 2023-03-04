@@ -198,6 +198,22 @@ app
 				console.log("Document Saved:", doc);
 			}
 		});
+		req.body.prods.forEach((prod) => {
+			console.log(prod);
+			Product.findOne({ name: prod.name }, (err, item) => {
+				if (err) {
+					console.error(err);
+				}
+				item.quantity -= prod.qty;
+				item.save((err) => {
+					if (!err) {
+						console.log("Document Updated: " + item);
+					} else {
+						console.log(err);
+					}
+				});
+			});
+		});
 		res.redirect("/");
 	});
 
