@@ -1,4 +1,124 @@
 <%- include("partials/header"); -%>
 
-
+<h3 class="my-3">From Carts to Cash</h3>
+<table class="table table-hover table-striped">
+	<thead>
+		<th scope="col">Time/Date</th>
+		<th scope="col">Flat#</th>
+		<th scope="col" class="text-end">Total</th>
+		<th scope="col" class="text-end">Status</th>
+	</thead>
+	<tbody id="tbody-orders">
+		<% invoices.forEach((invoice, index) => { %>
+		<tr
+			type="button"
+			data-bs-toggle="modal"
+			data-bs-target="#invoiceModal<%=index%>">
+			<%const date = new Date(invoice.invoiceDate); const timeString =
+			date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:
+			'2-digit' }); const dateString = date.toLocaleDateString('en-US', { month:
+			'long', day: '2-digit', year: 'numeric' }); const formattedDate =
+			`${timeString} ${dateString}`; %>
+			<td><%=formattedDate%></td>
+			<td><%=invoice.flat%></td>
+			<td class="text-end">
+				<%=invoice.invoiceTotal?.toLocaleString("en-IN", {style: 'currency',
+				currency: 'INR'})%>
+			</td>
+			<td class="text-end">
+				<%= invoice.paymentMode == 1 ? 'Unpaid' : invoice.paymentMode == 2 ?
+				'Paid: Cash' : invoice.paymentMode == 3 ? 'Paid: UPI' : null %>
+			</td>
+		</tr>
+		<% }) %>
+	</tbody>
+</table>
+<% invoices.forEach((invoice, index) => { const date = new
+Date(invoice.invoiceDate); const timeString = date.toLocaleTimeString('en-US', {
+hour12: true, hour: '2-digit', minute: '2-digit' }); const dateString =
+date.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year:
+'numeric' }); %>
+<div class="modal fade" id="invoiceModal<%=index%>" tabindex="-1">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5">Invoice: <%=invoice.invoiceId%></h1>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="d-flex justify-content-between align-items-center">
+					<span class="col-auto"><%=invoice.flat%></span>
+					<span class="col-auto"><%=timeString%></span>
+				</div>
+				<div class="d-flex justify-content-between align-items-center">
+					<span class="col-auto">Mobile#: <%=invoice.contact%></span>
+					<span class="col-auto"><%=dateString%></span>
+				</div>
+				<div class="d-flex justify-content-between align-items-center">
+					<span class="col-auto"
+						><%= invoice.person == 1 ? 'Sir' : invoice.person == 2 ? 'Madam' :
+						invoice.person == 3 ? 'Children' : invoice.person == 4 ? 'Driver' :
+						invoice.person == 5 ? 'Maid' : invoice.person == 6 ? 'Security' :
+						invoice.person == 7 ? 'Shop Delivery' : null %></span
+					>
+					<span class="col-auto"
+						><%= invoice.paymentMode == 1 ? 'Unpaid' : invoice.paymentMode == 2
+						? 'Paid: Cash' : invoice.paymentMode == 3 ? 'Paid: UPI' : null
+						%></span
+					>
+				</div>
+				<table class="table table-hover my-3">
+					<thead>
+						<tr>
+							<th scope="col">Name</th>
+							<th scope="col" class="text-center">Quantity</th>
+							<th scope="col" class="text-end">Each</th>
+							<th scope="col" class="text-end">Sub Total</th>
+						</tr>
+					</thead>
+					<tbody id="tbody-modal<%=index%>">
+						<% invoice.prods.forEach(prod => { %>
+						<tr>
+							<td><%=prod.name%></td>
+							<td class="text-center"><%=prod.qty%></td>
+							<td class="text-end">
+								<%=prod.price.SP?.toLocaleString("en-IN", {style:"currency",
+								currency: "INR"})%>
+							</td>
+							<td class="text-end">
+								<%=prod.subTotal?.toLocaleString("en-IN", {style:"currency",
+								currency: "INR"})%>
+							</td>
+						</tr>
+						<% }) %>
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<div class="text-end my-3">
+					<h6>
+						Total: <%=invoice.invoiceTotal?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<% }) %>
+<div class="d-flex justify-content-conter align-items-center">
+	<nav aria-label="...">
+		<ul class="pagination pagination-sm">
+			<li class="page-item active" aria-current="page">
+				<span class="page-link">1</span>
+			</li>
+			<li class="page-item"><a class="page-link" href="#">2</a></li>
+			<li class="page-item"><a class="page-link" href="#">3</a></li>
+		</ul>
+	</nav>
+</div>
 <%- include("partials/footer"); -%>
