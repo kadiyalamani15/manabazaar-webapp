@@ -1,5 +1,6 @@
 <%- include("partials/header"); -%>
 
+<h3 class="my-3">Invoice in a Snap</h3>
 <!-- TODO: Backend Database Modelling -->
 <div class="d-flex justify-content-center align-items-center h-100">
     <button type="button" class="btn btn-success order" data-bs-toggle="collapse" data-bs-target="#billing">NEW ORDER</button>
@@ -14,8 +15,8 @@
         const invoiceId = `${baseId + Math.floor(Math.random() * 1000)}-${randomString}`; // Combine base ID, random number, and random string %>
         <!-- TODO: Form Control for table to submit to database -->
         <!-- *Completed -->
-        <h3>Invoice:
-            #<%= invoiceId %></h3>
+        <h4>Invoice:
+            #<%= invoiceId %></h4>
         <div class="d-flex justify-content-between align-items-center my-3">
             <span id="dayDate" style="padding: 12px 0px;"></span>
             <!-- TODO: Time should be dynamically update as billing appears on screen -->
@@ -117,7 +118,7 @@
     </div>
 
     <div class="col-6 overflow-y-auto h-100 products">
-        <h3 class="pb-3">Products</h3>
+        <h4 class="pb-3">Products</h4>
         <!-- TODO: Search for products -->
         <!-- <form class="form-inline my-3">
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
