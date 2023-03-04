@@ -215,7 +215,7 @@ app.route("/Orders").get((req, res) => {
 		});
 });
 
-app.route("/Invoices/Due/:invoiceId").post((req, res) => {
+app.route("/Invoices/clearDue/:invoiceId").post((req, res) => {
 	// console.log("#" + req.params.invoiceId);
 	req.params.invoiceId = "#" + req.params.invoiceId;
 	Invoice.updateOne(
@@ -227,7 +227,7 @@ app.route("/Invoices/Due/:invoiceId").post((req, res) => {
 		}
 	).exec((err, inv) => {
 		if (!err) {
-			console.log(inv);
+			console.log("Document Updated: ", inv);
 		} else {
 			console.log(err);
 		}
@@ -235,9 +235,51 @@ app.route("/Invoices/Due/:invoiceId").post((req, res) => {
 	res.redirect("/Orders");
 });
 
+app.route("/Invoices/clearDues/:flat").post((req, res) => {
+	// console.log(req.params.flat);
+	Invoice.updateMany(
+		{ flat: req.params.flat, paymentDefault: true },
+		{
+			paymentDefault: false,
+			paymentDate: new Date(),
+			paymentMode: req.body.paymentMode,
+		}
+	).exec((err, inv) => {
+		if (!err) {
+			console.log("Documents Updated: ", inv);
+		} else {
+			console.log(err);
+		}
+	});
+
+	res.redirect("/Credits");
+});
+
 // ---------------- Credits ----------------
 app.route("/Credits").get((req, res) => {
-	res.render("credits");
+	Invoice.aggregate(
+		[
+			{ $match: { paymentDefault: true } },
+			{
+				$group: {
+					_id: "$flat",
+					totalDues: { $sum: 1 },
+					totalDueAmount: { $sum: "$invoiceTotal" },
+					dueInvoices: { $push: "$$ROOT" },
+				},
+			},
+			{
+				$sort: { totalDueAmount: -1 },
+			},
+		],
+		(err, dueFlats) => {
+			if (err) {
+				console.error(err);
+			}
+			// console.log(dueFlats);
+			res.render("credits", { dueFlats: dueFlats });
+		}
+	);
 });
 
 // ---------------- Dahsboard ----------------
@@ -356,7 +398,7 @@ app
 					if (err) {
 						console.log(err);
 					} else {
-						console.log(doc);
+						console.log("Document Updated: ", doc);
 					}
 				}
 			);
