@@ -102,7 +102,52 @@ app
 							});
 						});
 						//console.log(productsByCategory);
-						res.render("home", { inventory: productsByCategory });
+						const today = new Date();
+						const startOfDay = new Date(
+							today.getFullYear(),
+							today.getMonth(),
+							today.getDate(),
+							0,
+							0,
+							0
+						);
+						const endOfDay = new Date(
+							today.getFullYear(),
+							today.getMonth(),
+							today.getDate(),
+							23,
+							59,
+							59
+						);
+						Invoice.countDocuments(
+							{ invoiceDate: { $gte: startOfDay, $lte: endOfDay } },
+							(err, noOfSalesToday) => {
+								if (err) {
+									console.log(err);
+								}
+								Invoice.aggregate(
+									[
+										{
+											$match: {
+												invoiceDate: { $gte: startOfDay, $lte: endOfDay },
+											},
+										},
+										{ $group: { _id: null, total: { $sum: "$invoiceTotal" } } },
+									],
+									(err, salesAmountToday) => {
+										if (err) {
+											console.error(err);
+										}
+										// console.log(noOfSalesToday, salesAmountToday);
+										res.render("home", {
+											inventory: productsByCategory,
+											todaySalesCount: noOfSalesToday,
+											todaySalesAmoutTotal: salesAmountToday[0].total,
+										});
+									}
+								);
+							}
+						);
 					} else {
 						console.log(err);
 					}
