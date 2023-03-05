@@ -41,7 +41,7 @@ input[type="checkbox"]:checked:after {
 }
 
 .wrapper {
-	height: 250px;
+	height: 300px;
 }
 
 .wrapper .card {

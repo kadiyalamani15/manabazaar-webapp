@@ -1,6 +1,5 @@
 <%- include("partials/header"); -%>
 
-<h3 class="my-3">Invoice in a Snap</h3>
 <!-- TODO: Backend Database Modelling -->
 <div class="d-flex justify-content-center align-items-center h-100">
     <button type="button" class="btn btn-success order" data-bs-toggle="collapse" data-bs-target="#billing">NEW ORDER</button>
@@ -8,15 +7,14 @@
 
 <div class="row h-100 collapse" id="billing">
 
-    <div class="col-6 flex-grow-1">
+    <div class="col-6">
         <!-- Invoice#, Customer Details (Flat#, Contact#, Person), Time, Products, Total, Payment Mode -->
         <% const baseId = 10000; // Starting ID number
         const randomString = Math.random().toString(36).substring(2, 8).toUpperCase(); // Random string of 6 characters
         const invoiceId = `${baseId + Math.floor(Math.random() * 1000)}-${randomString}`; // Combine base ID, random number, and random string %>
         <!-- TODO: Form Control for table to submit to database -->
         <!-- *Completed -->
-        <h4>Invoice:
-            #<%= invoiceId %></h4>
+        <h4>#<%= invoiceId %></h4>
         <div class="d-flex justify-content-between align-items-center my-3">
             <span id="dayDate" style="padding: 12px 0px;"></span>
             <!-- TODO: Time should be dynamically update as billing appears on screen -->
@@ -110,14 +108,9 @@
                 </div>
             </div>
         </form>
-        <div class="d-flex justify-content-between">
-            <h6>Today's Orders</h6>
-            <h6><%=todaySalesCount%></h6>
-            <h6><%=todaySalesAmountTotal?.toLocaleString("en-IN", {style: 'currency', currency:'INR'})%></h6>
-        </div>
     </div>
 
-    <div class="col-6 overflow-y-auto h-100 products">
+    <div class="col-6 overflow-y-auto products">
         <h4 class="pb-3">Products</h4>
         <!-- TODO: Search for products -->
         <!-- <form class="form-inline my-3">
@@ -143,17 +136,17 @@
                         <img class="card-img-top"
                             src="https://www.lalpathlabs.com/blog/wp-content/uploads/2019/01/Fruits-and-Vegetables.jpg">
                         <div class="card-body">
-                            <div class="card-text card-prod-name">
+                            <div class="card-text">
                                 <b><%= product.name %></b>
                             </div>
-                            <div class="card-text card-prod-unit pt-1" style="font-size: 0.75rem;">
+                            <div class="card-text pt-1" style="font-size: 0.8rem;">
                                 <%= product.units ? product.units : 'No data' %>
                             </div>
-                            <div class="card-text card-prod-mrp pt-1" style="font-size: 0.75rem;">
-                                <del><%= product.price.MRP ? product.price.MRP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) : 'No data' %></del>
+                            <div class="card-text pt-3" style="font-size: 0.75rem">
+                                <del><%= product.price.MRP ? product.price.MRP?.toLocaleString("en-IN", {style:'currency', currency:'INR'})  : 'No data' %></del>
                             </div>
-                            <div class="card-title pt-2 card-prod-sp">
-                                <b><%= product.price.SP ? product.price.SP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) : 'No data' %></b>
+                            <div class="card-title pt-1">
+                                <%= product.price.SP ?product.price.SP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) : 'No data' %>
                             </div>
                         </div>
                     </div>
@@ -169,6 +162,10 @@
 <script>
     // Add a click event listener to the button
     document.querySelector('.order').addEventListener('click', function () { // Toggle the button visibility
+        let heading = document.createElement('h3')
+        heading.innerHTML = 'Invoice in a Snap';
+        heading.classList.add('my-3');
+        document.querySelector('.main').insertBefore(heading, document.querySelector('.main').firstChild);
         this.parentNode.remove();
         // Create a new Date object
         const now = new Date();
