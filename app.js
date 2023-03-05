@@ -49,6 +49,7 @@ const flatsSchema = {
 // ----------------  Intitializing Invoice Schema ----------------
 
 const invoicesSchema = {
+	cashier: String,
 	invoiceId: String,
 	invoiceDate: {
 		type: Date,
@@ -58,6 +59,7 @@ const invoicesSchema = {
 	contact: String,
 	person: Number,
 	invoiceTotal: Number,
+	invoiceSavings: Number,
 	prods: Array,
 	paymentMode: Number,
 	paymentDefault: Boolean,
