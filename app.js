@@ -49,7 +49,7 @@ const flatsSchema = {
 // ----------------  Intitializing Invoice Schema ----------------
 
 const invoicesSchema = {
-	cashier: String,
+	invoiceCashier: String,
 	invoiceId: String,
 	invoiceDate: {
 		type: Date,
@@ -58,9 +58,14 @@ const invoicesSchema = {
 	flat: String,
 	contact: String,
 	person: Number,
+	invoiceItemsCount: Number,
+	invoiceQty: Number,
+	invoiceSubTotal: Number,
+	invoiceTax: Number,
+	invoiceDeliveryCharge: Number,
+	invoiceDiscount: Number,
 	invoiceTotal: Number,
-	invoiceSavings: Number,
-	prods: Array,
+	invoiceItems: Array,
 	paymentMode: Number,
 	paymentDefault: Boolean,
 	paymentDate: Date,
@@ -191,7 +196,7 @@ app
 			req.body.paymentDefault = false;
 			req.body.paymentDate = new Date();
 		}
-		req.body.prods = JSON.parse(req.body.prods);
+		req.body.invoiceItems = JSON.parse(req.body.invoiceItems);
 		req.body.invoiceDate = new Date();
 		// console.log(req.body);
 		// TODO: Submit data to the database
@@ -203,7 +208,7 @@ app
 				console.log("Document Saved:", doc);
 			}
 		});
-		req.body.prods.forEach((prod) => {
+		req.body.invoiceItems.forEach((prod) => {
 			console.log(prod);
 			Product.findOne({ name: prod.name }, (err, item) => {
 				if (err) {
@@ -285,6 +290,12 @@ app.route("/Credits").get((req, res) => {
 				$group: {
 					_id: "$flat",
 					totalDues: { $sum: 1 },
+					totalDueItems: { $sum: "$invoiceItemsCount" },
+					totalDueQty: { $sum: "$invoiceQty" },
+					totalDueSubTotal: { $sum: "$invoiceSubTotal" },
+					totalDueTax: { $sum: "$invoiceTax" },
+					totalDueDeliveryCharges: { $sum: "$invoiceDeliveryCharge" },
+					totalDueDiscount: { $sum: "$invoiceDiscount" },
 					totalDueAmount: { $sum: "$invoiceTotal" },
 					dueInvoices: { $push: "$$ROOT" },
 				},

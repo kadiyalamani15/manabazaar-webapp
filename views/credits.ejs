@@ -73,17 +73,17 @@
 								</tr>
 							</thead>
 							<tbody id="tbody-modal<%=index%>">
-								<% invoice.prods.forEach(prod=>{ %>
+								<% invoice.invoiceItems.forEach(item=>{ %>
 								<tr>
-									<td><%=prod.name%></td>
-									<td class="text-center"><%=prod.qty%></td>
+									<td><%=item.name%></td>
+									<td class="text-center"><%=item.qty%></td>
 									<td class="text-end">
-										<%=prod.price.SP?.toLocaleString("en-IN", {style:"currency",
+										<%=item.price.SP?.toLocaleString("en-IN", {style:"currency",
 										currency: "INR"})%>
 									</td>
 									<td class="text-end">
-										<%=prod.subTotal?.toLocaleString("en-IN", {style:"currency",
-										currency: "INR"})%>
+										<%=item.itemSPSubTotal?.toLocaleString("en-IN",
+										{style:"currency", currency: "INR"})%>
 									</td>
 								</tr>
 								<% }) %>
@@ -91,6 +91,29 @@
 						</table>
 						<% if (dueFlat.totalDues !== 1) {%>
 						<div class="text-end my-3">
+							<h6>
+								Items/Qty: <%=invoice.invoiceItemsCount + '/' +
+								invoice.invoiceQty%>
+							</h6>
+							<h6>
+								Sub Total: <%=invoice.invoiceSubTotal?.toLocaleString("en-IN",
+								{style:"currency", currency: "INR"})%>
+							</h6>
+							<h6>
+								Included Total Tax:
+								<%=invoice.invoiceTax?.toLocaleString("en-IN",
+								{style:"currency", currency: "INR"})%>
+							</h6>
+							<h6>
+								Delivery Charges:
+								<%=invoice.invoiceDeliveryCharge?.toLocaleString("en-IN",
+								{style:"currency", currency: "INR"})%>
+							</h6>
+							<h6>
+								Discount: (-)
+								<%=invoice.invoiceDiscount?.toLocaleString("en-IN",
+								{style:"currency", currency: "INR"})%>
+							</h6>
 							<h6>
 								Total: <%=invoice.invoiceTotal?.toLocaleString("en-IN",
 								{style:"currency", currency: "INR"})%>
@@ -125,7 +148,27 @@
 				<%})%>
 				<div class="text-end my-3">
 					<h6>
-						Total: <%=dueFlat.totalDueAmount?.toLocaleString("en-IN",
+						Items/Qty: <%= dueFlat.totalDueItems + '/' + dueFlat.totalDueQty%>
+					</h6>
+					<h6>
+						Sub Total: <%=dueFlat.totalDueSubTotal?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+					<h6>
+						Included Total Tax: <%=dueFlat.totalDueTax?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+					<h6>
+						Delivery Charges:
+						<%=dueFlat.totalDueDeliveryCharges?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+					<h6>
+						Discount: (-) <%=dueFlat.totalDueDiscount?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+					<h6>
+						Grand Total: <%=dueFlat.totalDueAmount?.toLocaleString("en-IN",
 						{style:"currency", currency: "INR"})%>
 					</h6>
 				</div>

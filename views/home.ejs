@@ -8,7 +8,7 @@
 <div class="row h-100 collapse" id="billing">
 
     <div class="col-6">
-        <!-- Invoice#, Customer Details (Flat#, Contact#, Person), Time, Products, Total, Payment Mode -->
+        <!-- Invoice#, Customer Details (Flat#, Contact#, Person), Time, Items, Total, Payment Mode -->
         <% const baseId = 10000; // Starting ID number
         const randomString = Math.random().toString(36).substring(2, 8).toUpperCase(); // Random string of 6 characters
         const invoiceId = `${baseId + Math.floor(Math.random() * 1000)}-${randomString}`; // Combine base ID, random number, and random string %>
@@ -22,7 +22,7 @@
             <span id="time" style="padding: 12px 0px;"></span>
         </div>
         <form id="invoiceForm" action="/" method="post">
-            <input type="hidden" name="cashier" value="testing" required>
+            <input type="hidden" name="invoiceCashier" value="testing" required>
             <input type="hidden" name="invoiceId" value="#<%=invoiceId%>" required>
             <div class="row g-2 my-4">
                 <!-- TODO: Search for Flat# -->
@@ -62,9 +62,9 @@
                 <thead>
                     <tr>
                         <th scope="col">Name</th>
-                        <th scope="col">QTY</th>
-                        <th scope="col">Each</th>
-                        <th scope="col">Total</th>
+                        <th scope="col" class="text-center">QTY</th>
+                        <th scope="col" class="text-end">Each</th>
+                        <th scope="col" class="text-end">Total</th>
                     </tr>
                 </thead>
                 <!-- ? TODO: How to design the data model to submit along with the form -->
@@ -77,15 +77,32 @@
                 <p>Tax:
                     <span id="tax" class="ms-5">0
                 </p> -->
-                <h4 class="py-3">Saved:
-                    <span id="total-saved-amount" class="ms-5">₹0.00
-                </h4>
-                <h5>Total:
-                    <span id="total-amount" class="ms-5">₹0.00
-                </h5>
-                <input id="invoiceSavings" type="hidden" name="invoiceSavings" required>
+                <h6 class="py-1">Items/Qty:
+                    <span id="items-qty">0/0
+                </h6>
+                <h6 class="py-1">Sub Total:
+                    <span id="sub-total-amount">₹0.00
+                </h6>
+                <h6 class="py-1">Included Total Tax:
+                    <span id="total-tax-amount"> ₹0.00
+                </h6>
+                <h6 class="py-1">Delivery Charges:
+                    <span id="delivery-charges-amount">(+) ₹0.00
+                </h6>
+                <h6 class="py-1">Discount:
+                    <span id="total-discount-amount">(-) ₹0.00
+                </h6>
+                <h6>Total:
+                    <span id="total-amount">₹0.00
+                </h6>
+                <input id="invoiceItemsCount" type="hidden" name="invoiceItemsCount" required>
+                <input id="invoiceQty" type="hidden" name="invoiceQty" required>
+                <input id="invoiceSubTotal" type="hidden" name="invoiceSubTotal" required>
+                <input id="invoiceTax" type="hidden" name="invoiceTax" required value="0">
+                <input id="invoiceDeliveryCharge" type="hidden" name="invoiceDeliveryCharge" required value="0">
+                <input id="invoiceDiscount" type="hidden" name="invoiceDiscount" required>
                 <input id="invoiceTotal" type="hidden" name="invoiceTotal" required>
-                <input id="billedProducts" type="hidden" name="prods" required>
+                <input id="invoiceItems" type="hidden" name="invoiceItems" required>
             </div>
             <!-- TODO: Stock Deduction from Inventory after Submitting, Invoice generation -->
             <div class="d-flex justify-content-around my-5 payment-btns">
@@ -103,7 +120,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        There are no Products!
+                        Add Items to Cart!
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Okay</button>
@@ -113,6 +130,11 @@
                 </div>
             </div>
         </form>
+        <div class="d-flex justify-content-between">
+            <h6>Today's Orders</h6>
+            <h6><%=todaySalesCount%></h6>
+            <h6><%=todaySalesAmountTotal?.toLocaleString("en-IN", {style: 'currency', currency:'INR'})%></h6>
+        </div>
     </div>
 
     <div class="col-6 overflow-y-auto products">
@@ -258,49 +280,67 @@
     // Get the product checkboxes and billing table
     const productSelects = document.querySelectorAll('.product-select');
     const billingTableBody = document.querySelector('.billing tbody');
+    const itemsQtySpan = document.querySelector('#items-qty');
     const totalAmountSpan = document.querySelector('#total-amount');
-    const totalSavedAmountSpan = document.querySelector('#total-saved-amount');
+    const totalDiscountAmountSpan = document.querySelector('#total-discount-amount');
+    const invoiceSubTotalAmountSpan = document.querySelector('#sub-total-amount');
+    const invoiceTaxAmountSpan = document.querySelector("#total-tax-amount");
+    const invoiceDeliveryChargeSpan = document.querySelector('#delivery-charges-amount');
 
     // Define a function to update the billing table and total amount
     function updateBilling() {
         let totalAmount = 0;
         let totalMRP = 0;
-        let prods = [];
+        let invoiceItems = [];
+        let totalItems = 0;
+        let totalQty = 0;
         billingTableBody.innerHTML = '';
         // Loop through all selected products
-        productSelects.forEach((product) => {
-            if (product.checked) {
-                const prodName = product.dataset.name;
-                const prodMRP = parseFloat(product.dataset.price1);
-                const prodSP = parseFloat(product.dataset.price2);
-                const prodQty = product.dataset.qty;
-                const prodTotal = prodSP * prodQty;
-                const prodMRPTotal = prodMRP * prodQty;
+        productSelects.forEach((item) => {
+            if (item.checked) {
+                const itemName = item.dataset.name;
+                const itemMRP = parseFloat(item.dataset.price1);
+                const itemSP = parseFloat(item.dataset.price2);
+                const itemQty = parseInt(item.dataset.qty);
+                const itemSPTotal = itemSP * itemQty;
+                const itemMRPTotal = itemMRP * itemQty;
                 // Create a new row in the billing table for the product
                 const newRow = document.createElement("tr");
                 newRow.innerHTML = `
-                    <td>${prodName}</td>
-                    <td>
-                        <button class="btn btn-sm btn-danger qty-dec" data-name="${prodName}">-</button>
-                        <span class="mx-2 qty-span">${prodQty}</span>
-                        <button class="btn btn-sm btn-success qty-inc" data-name="${prodName}">+</button>
+                    <td>${itemName}</td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-danger qty-dec" data-name="${itemName}">-</button>
+                        <span class="mx-2 qty-span">${itemQty}</span>
+                        <button class="btn btn-sm btn-success qty-inc" data-name="${itemName}">+</button>
                     </td>
-                    <td>${prodSP?.toLocaleString("en-IN", {style:'currency', currency:'INR'})}</td>
-                    <td>${prodTotal?.toLocaleString("en-IN", {style:'currency', currency:'INR'})}</td>`;
+                    <td class="text-end">${itemSP?.toLocaleString("en-IN", {style:'currency', currency:'INR'})}</td>
+                    <td class="text-end">${itemSPTotal?.toLocaleString("en-IN", {style:'currency', currency:'INR'})}</td>`;
                 billingTableBody.appendChild(newRow);
-                // Add the Product Row Info to prods
-                prods.push({name: prodName, price : {MRP : prodMRP, SP: prodSP}, qty: prodQty, subTotal: prodTotal});
+                // Add the Item Row Info to invoiceItems array
+                invoiceItems.push({name: itemName, price : {MRP : itemMRP, SP: itemSP}, qty: itemQty, itemSPSubTotal: itemSPTotal, itemMRPSubTotal: itemMRPTotal});
+                // Add the Items and Quantity
+                totalQty += itemQty;
                 // Add the product total to the total amount
-                totalAmount += prodTotal;
-                totalMRP += prodMRPTotal;
+                totalAmount += itemSPTotal;
+                totalMRP += itemMRPTotal;
+                totalItems++;
             }
         });
         // Update the Billed Products for Invoice Submission
-        document.getElementById('billedProducts').value = JSON.stringify(prods);
-        // Update the Saved Amount
-        totalSavedAmountSpan.textContent = (totalMRP - totalAmount)?.toLocaleString("en-IN", {style:'currency', currency:'INR'});
-        // Update the Invoice Savings Amount for Submission
-        document.getElementById('invoiceSavings').value = totalMRP - totalAmount;
+        document.getElementById('invoiceItems').value = JSON.stringify(invoiceItems);
+        // Update the Items & Quantity
+        document.getElementById('invoiceItemsCount').value = totalItems;
+        document.getElementById('invoiceQty').value = totalQty;
+        // Update the Items & Quantity for Submission
+        itemsQtySpan.textContent = totalItems + '/' + totalQty;
+        // Update the Sub Total Amount
+        invoiceSubTotalAmountSpan.textContent = totalMRP?.toLocaleString("en-IN", {style:'currency', currency:'INR'});
+        // Update the Invoice Sub Total for Submission
+        document.getElementById('invoiceSubTotal').value = totalMRP;
+        // Update the Discount Amount
+        totalDiscountAmountSpan.textContent = '(-) ' + (totalMRP - totalAmount)?.toLocaleString("en-IN", {style:'currency', currency:'INR'});
+        // Update the Invoice Discount Amount for Submission
+        document.getElementById('invoiceDiscount').value = totalMRP - totalAmount;
         // Update the total amount in the billing table
         totalAmountSpan.textContent = totalAmount?.toLocaleString("en-IN", {style:'currency', currency:'INR'});
         // Update the Invoice Total Amount for Submission
@@ -358,7 +398,7 @@
 
     invoiceForm.addEventListener('submit', function(e)  {
         e.preventDefault();
-        var hiddenField1 = document.getElementById('billedProducts');
+        var hiddenField1 = document.getElementById('invoiceItems');
         var hiddenField2 = document.getElementById('invoiceTotal');
         if (hiddenField1.value != "" && hiddenField2.value != 0) {
             e.target.submit();
