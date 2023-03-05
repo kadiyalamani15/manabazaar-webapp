@@ -143,11 +143,17 @@
                         <img class="card-img-top"
                             src="https://www.lalpathlabs.com/blog/wp-content/uploads/2019/01/Fruits-and-Vegetables.jpg">
                         <div class="card-body">
-                            <div class="card-text">
-                                <%= product.name %>
+                            <div class="card-text card-prod-name">
+                                <b><%= product.name %></b>
                             </div>
-                            <div class="card-title pt-2">
-                                <%= product.price.SP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) %>
+                            <div class="card-text card-prod-unit pt-1" style="font-size: 0.75rem;">
+                                <%= product.units ? product.units : 'No data' %>
+                            </div>
+                            <div class="card-text card-prod-mrp pt-1" style="font-size: 0.75rem;">
+                                <del><%= product.price.MRP ? product.price.MRP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) : 'No data' %></del>
+                            </div>
+                            <div class="card-title pt-2 card-prod-sp">
+                                <b><%= product.price.SP ? product.price.SP?.toLocaleString("en-IN", {style:'currency', currency:'INR'}) : 'No data' %></b>
                             </div>
                         </div>
                     </div>
