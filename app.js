@@ -142,7 +142,10 @@ app
 										res.render("home", {
 											inventory: productsByCategory,
 											todaySalesCount: noOfSalesToday,
-											todaySalesAmoutTotal: salesAmountToday[0].total,
+											todaySalesAmountTotal:
+												salesAmountToday.length != 0
+													? salesAmountToday[0].total
+													: 0,
 										});
 									}
 								);
