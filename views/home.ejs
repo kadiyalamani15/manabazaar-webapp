@@ -136,8 +136,14 @@
             <div class="collapse" id="products<%=iter%>">
                 <div class="wrapper d-flex flex-row overflow-x-auto">
                     <% categoryProducts.forEach((product) => { %>
-                    <div class="card me-3">
+                        <% if (product.quantity == 0) { %>
+                    <div class="card me-3" style="opacity: 0.4;">
+                        <% } else { %>
+                            <div class="card me-3">
+                        <% } %>
+                        <% if (product.quantity > 0) { %>
                         <input type="checkbox" class="product-select h-100 w-100 position-absolute" data-name="<%=product.name%>" data-price1="<%= product.price.MRP %>" data-price2="<%= product.price.SP %>">
+                        <% } %>
                         <img class="card-img-top"
                             src="https://www.lalpathlabs.com/blog/wp-content/uploads/2019/01/Fruits-and-Vegetables.jpg">
                         <div class="card-body">
