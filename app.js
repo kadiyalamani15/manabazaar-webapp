@@ -27,6 +27,7 @@ const productsSchema = {
 	price: {
 		MRP: Number,
 		SP: Number,
+		CP: Number
 	},
 	quantity: Number,
 	units: String,

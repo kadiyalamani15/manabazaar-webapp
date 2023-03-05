@@ -141,11 +141,12 @@ subCategoryProducts = data[sub_category]; %>
 	<thead>
 		<tr>
 			<th scope="col" class="col-1">Product ID</th>
-			<th scope="col" class="col-3">Product Name</th>
+			<th scope="col" class="col-2">Product Name</th>
 			<th scope="col" class="col-2 text-end">MRP</th>
 			<th scope="col" class="col-2 text-end">SP</th>
-			<th scope="col" class="col-2 text-center">Stock Qty</th>
-			<th scope="col" class="col-2 text-center">Units</th>
+			<th scope="col" class="col-2 text-end">CP</th>
+			<th scope="col" class="col-1 text-end">Stock Qty</th>
+			<th scope="col" class="col-2 text-end">Units</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -164,10 +165,14 @@ subCategoryProducts = data[sub_category]; %>
 				<%= product.price.SP?.toLocaleString("en-IN", {style:'currency',
 				currency:'INR'}) %>
 			</td>
-			<td class="text-center" name="quantity" data-prod="<%= product.name %>">
+			<td class="text-end" name="price.CP" data-prod="<%= product.name %>">
+				<%= product.price.CP?.toLocaleString("en-IN", {style:'currency',
+				currency:'INR'}) %>
+			</td>
+			<td class="text-end" name="quantity" data-prod="<%= product.name %>">
 				<%= product.quantity %>
 			</td>
-			<td class="text-center" name="units" data-prod="<%= product.name %>">
+			<td class="text-end" name="units" data-prod="<%= product.name %>">
 				<%= product.units %>
 			</td>
 		</tr>
@@ -230,6 +235,9 @@ subCategoryProducts = data[sub_category]; %>
 								sub_name: newVal,
 								old_name: oldVal,
 							});
+							setTimeout(() => {
+								location.reload();
+							}, 200);
 						} else {
 							// Product Update
 							let attr = this.parentNode.getAttribute("name");
@@ -237,6 +245,9 @@ subCategoryProducts = data[sub_category]; %>
 							data["prod_name"] = this.parentNode.getAttribute("data-prod");
 							data[attr] = newVal;
 							axios.patch("/Inventory/<%=categoryTitle%>", data);
+							setTimeout(() => {
+								location.reload();
+							}, 200);
 						}
 					}
 					this.parentNode.innerHTML = newVal;
