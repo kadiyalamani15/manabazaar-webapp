@@ -59,21 +59,34 @@ subCategoryProducts = data[sub_category]; %>
 							<div class="form-floating mb-3">
 								<input
 									type="text"
-									class="form-control"
-									id="floatingInputDisabled"
-									placeholder="Product ID"
-									value="<%= lastProductID?lastProductID:(iter*100) + subCategoryProducts.length + 1 + categoryID %>"
-									disabled />
-								<label for="floatingInputDisabled">Product ID</label>
-							</div>
-							<div class="form-floating mb-3">
-								<input
-									type="text"
 									name="name"
 									class="form-control"
 									id="floatingInputValue"
-									placeholder="Name" />
+									placeholder="Name"
+									required />
 								<label for="floatingInputValue">Name</label>
+							</div>
+							<div class="row g-2">
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										class="form-control"
+										id="floatingInputDisabled"
+										placeholder="Product ID"
+										value="<%= lastProductID?lastProductID:(iter*100) + subCategoryProducts.length + 1 + categoryID %>"
+										disabled />
+									<label for="floatingInputDisabled">Product ID</label>
+								</div>
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="price.CP"
+										class="form-control"
+										id="floatingCP"
+										placeholder="₹ Cost Price"
+										required />
+									<label for="floatingSP">₹ Cost Price</label>
+								</div>
 							</div>
 							<div class="row g-2">
 								<div class="form-floating mb-3 col-6">
@@ -82,7 +95,8 @@ subCategoryProducts = data[sub_category]; %>
 										name="price.MRP"
 										class="form-control"
 										id="floatingMRP"
-										placeholder="₹ Marked Retail Price" />
+										placeholder="₹ Marked Retail Price"
+										required />
 									<label for="floatingMRP">₹ Marked Retail Price</label>
 								</div>
 								<div class="form-floating mb-3 col-6">
@@ -91,7 +105,8 @@ subCategoryProducts = data[sub_category]; %>
 										name="price.SP"
 										class="form-control"
 										id="floatingSP"
-										placeholder="₹ Selling Price" />
+										placeholder="₹ Selling Price"
+										required />
 									<label for="floatingSP">₹ Selling Price</label>
 								</div>
 							</div>
@@ -102,7 +117,8 @@ subCategoryProducts = data[sub_category]; %>
 										name="quantity"
 										class="form-control"
 										id="floatingQty"
-										placeholder="Stock Quantity" />
+										placeholder="Stock Quantity"
+										required />
 									<label for="floatingQty">Stock Quantity</label>
 								</div>
 								<div class="form-floating mb-3 col-6">
@@ -111,7 +127,8 @@ subCategoryProducts = data[sub_category]; %>
 										name="units"
 										class="form-control"
 										id="floatingUnits"
-										placeholder="Units" />
+										placeholder="Units"
+										required />
 									<label for="floatingUnits">Units</label>
 								</div>
 							</div>
