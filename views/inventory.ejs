@@ -1,6 +1,50 @@
 <%- include("partials/header"); -%>
 
-<h3 class="my-3">Keep Your Shelves Stocked</h3>
+<div class="row row-cols-auto align-items-center">
+	<div class="col">
+		<h3 class="my-3">Keep Your Shelves Stocked</h3>
+	</div>
+	<div>
+		<button
+			type="button"
+			class="btn btn-primary"
+			data-bs-toggle="modal"
+			data-bs-target="#categoryModal">
+			Add New Category
+		</button>
+		<div class="modal" id="categoryModal" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<form action="/Inventory" method="post">
+						<div class="modal-header">
+							<h5 class="modal-title">Spice Up Our Inventory</h5>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="form-floating">
+								<input
+									type="text"
+									name="category"
+									class="form-control"
+									id="flaotingInputValue"
+									placeholder="New Category"
+									required />
+								<label for="floatingInputValue">New Category</label>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-primary">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 <div class="row d-flex justify-content-around card-deck">
 	<% Categories.forEach(function(category) { %>
 	<div class="col-4 py-3">
@@ -16,34 +60,22 @@
 		</a>
 	</div>
 	<% }) %>
-	<div class="col-4">
-		<a onclick="addCategory()">
-			<div class="card">
-				<img class="card-img-top" src="" />
-				<div class="card-body">
-					<h5 class="card-title text-center" id="addCategory">+</h5>
-				</div>
-			</div>
-		</a>
-	</div>
 </div>
 
 <script>
-	const addCategory = () => {
-		// Click/Double Click on Input field is ignored
-		if (event.target.tagName == "INPUT") {
-			return;
-		}
-		// Enter is pressed to Submit the New Product Category
-		var input =
-			"<form action='/Inventory/' method='post'><input type='text' name='category' placeholder='New Category'><input type='submit' class='hiddenSubmitBtn' onClick='javascript:void(0)'></form>";
-		$("#addCategory").html(input);
-		// On Blur, Entered data is lost
-		$("input").on("blur", () => {
-			$("#addCategory").html("+");
+	// Get all the modal elements
+	const modals = document.querySelectorAll(".modal");
+
+	// Loop through each modal and add an event listener to the "hide.bs.modal" event
+	modals.forEach((modal) => {
+		modal.addEventListener("hide.bs.modal", () => {
+			// Get the corresponding form element
+			const form = modal.querySelector("form");
+
+			// Reset the form elements
+			form.reset();
 		});
-		$("input").focus();
-	};
+	});
 </script>
 
 <%- include("partials/footer"); -%>
