@@ -105,6 +105,7 @@
                 <input id="invoiceItems" type="hidden" name="invoiceItems" required>
             </div>
             <!-- TODO: Stock Deduction from Inventory after Submitting, Invoice generation -->
+            <!-- *Completed -->
             <div class="d-flex justify-content-around my-5 payment-btns">
                 <button type="submit" class="btn btn-outline-danger w-25" name="paymentMode" value="1">UNPAID</button>
                 <button type="submit" class="btn btn-outline-warning w-25" name="paymentMode" value="2">CASH</button>
@@ -164,7 +165,7 @@
                             <div class="card me-3">
                         <% } %>
                         <% if (product.quantity > 0) { %>
-                        <input type="checkbox" class="product-select h-100 w-100 position-absolute" data-name="<%=product.name%>" data-price1="<%= product.price.MRP %>" data-price2="<%= product.price.SP %>">
+                        <input type="checkbox" class="product-select h-100 w-100 position-absolute" data-name="<%=product.name%>" data-price1="<%= product.price.MRP %>" data-price2="<%= product.price.SP %>" data-stock="<%=product.quantity%>">
                         <% } %>
                         <img class="card-img-top"
                             src="https://www.lalpathlabs.com/blog/wp-content/uploads/2019/01/Fruits-and-Vegetables.jpg">
@@ -309,9 +310,9 @@
                 newRow.innerHTML = `
                     <td>${itemName}</td>
                     <td class="text-center">
-                        <button class="btn btn-sm btn-danger qty-dec" data-name="${itemName}">-</button>
+                        <button type="button" class="btn btn-sm btn-danger qty-dec" data-name="${itemName}">-</button>
                         <span class="mx-2 qty-span">${itemQty}</span>
-                        <button class="btn btn-sm btn-success qty-inc" data-name="${itemName}">+</button>
+                        <button type="button" class="btn btn-sm btn-success qty-inc" data-name="${itemName}" data-toggle="popover" data-content="No more stock!">+</button>
                     </td>
                     <td class="text-end">${itemSP?.toLocaleString("en-IN", {style:'currency', currency:'INR'})}</td>
                     <td class="text-end">${itemSPTotal?.toLocaleString("en-IN", {style:'currency', currency:'INR'})}</td>`;
@@ -378,9 +379,21 @@
             const prodName = e.target.dataset.name;
             const productSelect = Array.from(productSelects).find((select) => select.dataset.name === prodName);
             const prodQty = parseInt(productSelect.dataset.qty) || 1;
-            productSelect.dataset.qty = prodQty + 1;
-            // Update the billing
-            updateBilling();
+            if (productSelect.dataset.stock - prodQty != 0) {
+                productSelect.dataset.qty = prodQty + 1;
+                // Update the billing
+                updateBilling();
+            } else {
+                // TODO: Popover to Inform the user about the status
+                // *Completed
+                // Show popover to inform the user about the status
+                $(e.target).popover({
+                    trigger: "manual",
+                    content: "No more stock!"
+                });
+                $(e.target).popover('show');
+                // console.log("Zero Stock Quantity");
+            }
         } else if (e.target.classList.contains("qty-dec")) {
             // Decrement the quantity of the quantity of the corresponding product
             const prodName = e.target.dataset.name;
