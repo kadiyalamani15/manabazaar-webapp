@@ -392,6 +392,10 @@
                     content: "No more stock!"
                 });
                 $(e.target).popover('show');
+                // Hide popover after 1.5 seconds
+                setTimeout(function() {
+                    $(e.target).popover('hide');
+                }, 1000);
                 // console.log("Zero Stock Quantity");
             }
         } else if (e.target.classList.contains("qty-dec")) {
