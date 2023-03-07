@@ -4,7 +4,7 @@
 	<div class="col">
 		<h3 class="my-3">Keep Your Shelves Stocked</h3>
 	</div>
-	<div>
+	<div class="col">
 		<button
 			type="button"
 			class="btn btn-primary"
@@ -15,7 +15,7 @@
 		<div class="modal" id="categoryModal" tabindex="-1">
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
-					<form action="/Inventory" method="post">
+					<form action="/inventory/category/crud" method="post">
 						<div class="modal-header">
 							<h5 class="modal-title">Spice Up Our Inventory</h5>
 							<button
@@ -37,18 +37,30 @@
 							</div>
 						</div>
 						<div class="modal-footer">
-							<button type="submit" class="btn btn-primary">Submit</button>
+							<button
+								type="submit"
+								class="btn btn-primary"
+								name="crud"
+								value="create">
+								Submit
+							</button>
 						</div>
 					</form>
 				</div>
 			</div>
 		</div>
 	</div>
+	<div class="col">
+		<button type="button" class="btn btn-primary" id="out-of-stock">
+			<i class="fa-solid fa-boxes-stacked"></i>
+		</button>
+	</div>
 </div>
 <div class="row d-flex justify-content-around card-deck">
 	<% Categories.forEach(function(category) { %>
+	<!-- TODO: Edit and Remove Icons and Forms for each category, should delete from category model, then corresponding products from product model, similarly for edit -->
 	<div class="col-4 py-3">
-		<a href="/Inventory/<%=category.name%>">
+		<a href="/Inventory/category/<%=category.id%>/products">
 			<div class="card">
 				<img
 					class="card-img-top"
@@ -75,6 +87,11 @@
 			// Reset the form elements
 			form.reset();
 		});
+	});
+
+	// Out of Stock Request
+	document.getElementById("out-of-stock").addEventListener("click", () => {
+		axios.get("/inventory/outOfStock");
 	});
 </script>
 

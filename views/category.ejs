@@ -3,20 +3,69 @@
 <!-- Product Category Title -->
 <h3 class="my-3"><%= categoryTitle %></h3>
 <!-- To Compute for new Product ID -->
-<% var iter = 1; %> <% Object.keys(data).forEach((sub_category) => { const
-subCategoryProducts = data[sub_category]; %>
-<div class="row row-cols-auto py-4">
+<% var iter = 1; %> <% Object.keys(data).forEach((sub_category, index) => {
+const subCategoryProducts = data[sub_category]; %>
+<div class="row row-cols-auto py-4 align-items-center">
 	<div class="col">
 		<!-- Product Sub Category -->
-		<h4><%= sub_category %></h4>
-	</div>
-	<div class="col">
-		<!-- Delete Sub Category -->
-		<form action="/Inventory/<%=categoryTitle%>" method="post">
-			<input type="hidden" name="formName" value="deleteSubCategory" />
-			<input type="hidden" name="subCategoryName" value="<%=sub_category%>" />
-			<button type="submit" class="btn btn-danger">Delete Sub Category</button>
-		</form>
+		<h4
+			type="button"
+			data-bs-toggle="modal"
+			data-bs-target="#subCategory<%=index%>">
+			<%= sub_category %>
+		</h4>
+		<div class="modal" id="subCategory<%=index%>" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<form
+						class="productForm"
+						action="/inventory/category/<%=categoryID%>/subcategory/crud"
+						method="POST">
+						<div class="modal-header">
+							<h5 class="modal-title">Edit Sub Category</h5>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="form-floating mb-3">
+								<input
+									type="hidden"
+									name="oldSubCategoryName"
+									value="<%=sub_category%>" />
+								<input
+									type="text"
+									name="newSubCategoryName"
+									class="form-control"
+									id="floatingInputValue"
+									placeholder="Sub Category"
+									value="<%=sub_category%>"
+									required />
+								<label for="floatingInputValue">Sub Category</label>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button
+								type="submit"
+								class="btn btn-secondary"
+								name="crud"
+								value="del">
+								Delete
+							</button>
+							<button
+								type="submit"
+								class="btn btn-primary"
+								name="crud"
+								value="update">
+								Update
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 	</div>
 	<!-- TODO: Update Product ID Logic -->
 	<!-- *COMPLETED -->
@@ -35,14 +84,8 @@ subCategoryProducts = data[sub_category]; %>
 				<div class="modal-content">
 					<form
 						class="productForm"
-						action="/Inventory/<%=categoryTitle%>"
+						action="/inventory/category/<%=categoryID%>/product/<%=lastProductID?lastProductID:(iter*100) + subCategoryProducts.length + 1 + categoryID%>/crud"
 						method="POST">
-						<input type="hidden" name="formName" value="addProduct" />
-						<input
-							type="hidden"
-							name="id"
-							value="<%=lastProductID?lastProductID:(iter*100) + subCategoryProducts.length + 1 + categoryID%>" />
-						<input type="hidden" name="category" value="<%=categoryTitle%>" />
 						<input
 							type="hidden"
 							name="sub_category"
@@ -144,7 +187,13 @@ subCategoryProducts = data[sub_category]; %>
 							</button>
 							<!-- TODO: Submit to DB and Redirect -->
 							<!-- *COMPLETED -->
-							<button type="submit" class="btn btn-primary">Submit</button>
+							<button
+								type="submit"
+								class="btn btn-primary"
+								name="crud"
+								value="create">
+								Submit
+							</button>
 						</div>
 					</form>
 				</div>
@@ -171,7 +220,10 @@ subCategoryProducts = data[sub_category]; %>
 		<% var lastProductID = '' %> <% subCategoryProducts.forEach((product) => {
 		%>
 		<!-- Exisitng Product Listing Row -->
-		<tr>
+		<tr
+			type="button"
+			data-bs-toggle="modal"
+			data-bs-target="#editProduct<%=product.id%>">
 			<th scope="row"><%= product.id %></th>
 			<td name="name" data-prod="<%= product.name %>"><%= product.name %></td>
 			<td class="text-end" name="price.MRP" data-prod="<%= product.name %>">
@@ -193,6 +245,127 @@ subCategoryProducts = data[sub_category]; %>
 				<%= product.units %>
 			</td>
 		</tr>
+
+		<!-- TODO: Show Product Edit Modal -->
+		<div class="modal" id="editProduct<%=product.id%>" tabindex="-1">
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<form
+						class="productForm"
+						action="/inventory/category/<%=categoryID%>/product/<%=product.id%>/crud"
+						method="POST">
+						<div class="modal-header">
+							<h5 class="modal-title">Update inventory with ease</h5>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div class="form-floating mb-3">
+								<input
+									type="text"
+									name="name"
+									class="form-control"
+									id="floatingInputValue"
+									placeholder="Name"
+									value="<%=product.name%>"
+									required />
+								<label for="floatingInputValue">Name</label>
+							</div>
+							<div class="row g-2">
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										class="form-control"
+										id="floatingInputDisabled"
+										placeholder="Product ID"
+										value="<%=product.id%>"
+										disabled />
+									<label for="floatingInputDisabled">Product ID</label>
+								</div>
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="price.CP"
+										class="form-control"
+										id="floatingCP"
+										placeholder="₹ Cost Price"
+										value="<%=product.price.CP%>"
+										required />
+									<label for="floatingSP">₹ Cost Price</label>
+								</div>
+							</div>
+							<div class="row g-2">
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="price.MRP"
+										class="form-control"
+										id="floatingMRP"
+										placeholder="₹ Marked Retail Price"
+										value="<%=product.price.MRP%>"
+										required />
+									<label for="floatingMRP">₹ Marked Retail Price</label>
+								</div>
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="price.SP"
+										class="form-control"
+										id="floatingSP"
+										placeholder="₹ Selling Price"
+										value="<%=product.price.SP%>"
+										required />
+									<label for="floatingSP">₹ Selling Price</label>
+								</div>
+							</div>
+							<div class="row g-2">
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="quantity"
+										class="form-control"
+										id="floatingQty"
+										placeholder="Stock Quantity"
+										value="<%=product.quantity%>"
+										required />
+									<label for="floatingQty">Stock Quantity</label>
+								</div>
+								<div class="form-floating mb-3 col-6">
+									<input
+										type="text"
+										name="units"
+										class="form-control"
+										id="floatingUnits"
+										placeholder="Units"
+										value="<%=product.units%>"
+										required />
+									<label for="floatingUnits">Units</label>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button
+								type="submit"
+								class="btn btn-danger"
+								name="crud"
+								value="del">
+								Delete
+							</button>
+							<button
+								type="submit"
+								class="btn btn-primary"
+								name="crud"
+								value="update">
+								Submit
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
 		<!-- Updating New Product ID Computation -->
 		<% lastProductID = product.id + 1; %> <% }) %>
 	</tbody>
@@ -201,15 +374,21 @@ subCategoryProducts = data[sub_category]; %>
 <!-- TODO: Decrease the Form's Input Width for Sub Category -->
 <!-- *COMPLETED -->
 <!-- Form to Add New Sub Category -->
-<form class="col-3 py-3" action="/Inventory/<%=categoryTitle%>" method="post">
-	<input type="hidden" name="formName" value="addSubCategory" />
-	<input type="hidden" name="categoryName" value="<%=categoryTitle%>" />
+<form
+	class="col-3 py-3"
+	action="/inventory/category/<%=categoryID%>/subcategory/crud"
+	method="post">
 	<input
 		type="text"
 		class="form-control"
 		name="newSubCategoryName"
 		placeholder="Add Sub Category" />
-	<input type="submit" class="hiddenSubmitBtn" onclick="javascript:void(0)" />
+	<input
+		type="submit"
+		class="hiddenSubmitBtn"
+		name="crud"
+		value="create"
+		onclick="javascript:void(0)" />
 </form>
 
 <table class="table table-hover mb-3">
@@ -228,53 +407,6 @@ subCategoryProducts = data[sub_category]; %>
 
 <!-- Edit Product & Sub Category  -->
 <script>
-	document
-		.querySelectorAll("table tbody tr td, .col h4")
-		.forEach(function (node) {
-			node.ondblclick = function () {
-				if (event.target.tagName === "INPUT") {
-					return;
-				}
-				var oldVal = this.innerHTML.trim();
-				var input = document.createElement("input");
-				input.value = oldVal;
-				var tag = this.tagName;
-				input.onblur = function () {
-					var newVal = this.value;
-					//this.parentNode.innerHTML = val;
-					// If there is change in value then update
-					if (oldVal != newVal) {
-						console.log("Old: " + oldVal + " New: " + newVal);
-						// Checking Tag to edit accordingly
-						if (tag === "H4") {
-							// Sub Category Update
-							axios.patch("/Inventory/<%=categoryTitle%>", {
-								sub_name: newVal,
-								old_name: oldVal,
-							});
-							setTimeout(() => {
-								location.reload();
-							}, 200);
-						} else {
-							// Product Update
-							let attr = this.parentNode.getAttribute("name");
-							let data = {};
-							data["prod_name"] = this.parentNode.getAttribute("data-prod");
-							data[attr] = newVal;
-							axios.patch("/Inventory/<%=categoryTitle%>", data);
-							setTimeout(() => {
-								location.reload();
-							}, 200);
-						}
-					}
-					this.parentNode.innerHTML = newVal;
-				};
-				this.innerHTML = "";
-				this.appendChild(input);
-				input.focus();
-			};
-		});
-
 	// Get all the modal elements
 	const modals = document.querySelectorAll(".modal");
 

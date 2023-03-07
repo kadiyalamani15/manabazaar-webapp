@@ -4,6 +4,7 @@ const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const axios = require("axios");
+const niceInvoice = require("nice-invoice");
 
 // ---------------- Initializing Node Express App ----------------
 const app = express();
@@ -27,7 +28,7 @@ const productsSchema = {
 	price: {
 		MRP: Number,
 		SP: Number,
-		CP: Number
+		CP: Number,
 	},
 	quantity: Number,
 	units: String,
@@ -86,9 +87,11 @@ const Flat = mongoose.model("Flat", flatsSchema);
 
 const Invoice = mongoose.model("Invoice", invoicesSchema);
 
-// ---------------- APP ROUTES ----------------
+// * APP ROUTES * //
 
-// ---------------- Billing ----------------
+// * INVOICE ROUTES * //
+// TODO: 1.1. GET: '/', Get products, process the template to show case products and invoice, today's sales count and amount
+// * COMPLETED * //
 app
 	.route("/")
 	.get((req, res) => {
@@ -169,9 +172,11 @@ app
 		});
 		//res.render("home");
 	})
+	// TODO: 1.2. POST: '/', Submit the Invoice Order, Generate Invoice PDF, store it in datewise folder in local system, in future send it to the customer's Whatsapp Account or App Account
+	// * COMPLETED * //
 	.post((req, res) => {
 		// TODO: Compute the timestamp and the elapsed time of submissions
-		// *Completed
+		// * COMPLETED * //
 		const now = new Date();
 		const options = {
 			timeZone: "Asia/Kolkata",
@@ -201,7 +206,7 @@ app
 		req.body.invoiceDate = new Date();
 		// console.log(req.body);
 		// TODO: Submit data to the database
-		// *Completed
+		// * COMPLETED * //
 		Invoice.create(req.body, (err, doc) => {
 			if (err) {
 				console.log(err);
@@ -228,25 +233,54 @@ app
 		res.redirect("/");
 	});
 
-// ---------------- Orders ----------------
-app.route("/Orders").get((req, res) => {
+// TODO: 1.3. GET: '/getFlats', Gets all flats
+// * COMPLETED * //
+app.post("/getFlats", async (req, res) => {
+	let payload = req.body.payload.trim();
+	let regex1 = /([a-zA-Z]+)(\d+)/;
+	let regex2 = /^([a-zA-Z])\s+[0-9]+$/;
+	if (regex1.test(payload)) {
+		// console.log("Match! " + payload);
+		payload = payload.replace(/^([a-zA-Z])(\d+)/, "$1 $2");
+		// console.log("Regex: " + payload);
+	} else if (regex2.test(payload)) {
+		// console.log("Match! " + payload);
+		payload = payload.replace(/([a-zA-Z])(\s+)?(\d+)/, "$1 $3");
+		// console.log("Regex: " + payload);
+	} else {
+		// console.log("No Match! " + payload);
+	}
+	let search = await Flat.find({
+		flat: { $regex: new RegExp(payload, "i") },
+	})
+		.limit(3)
+		.exec();
+	// console.log(search);
+	res.send({ payload: search });
+});
+
+// * ORDERS ROUTES * //
+// TODO: 2.1. GET: '/orders' --> invoices, Get all orders in descending order sorted on date, render the template
+// * COMPLETED * //
+app.get("/invoices", (req, res) => {
 	Invoice.find()
 		.sort({ invoiceDate: -1 })
 		.exec((err, invoice) => {
 			if (!err) {
-				res.render("orders", { invoices: invoice });
+				res.render("invoices", { invoices: invoice });
 				// console.log(invoice);
 			} else {
 				console.log(err);
 			}
 		});
 });
-
-app.route("/Invoices/clearDue/:invoiceId").post((req, res) => {
+// TODO: 2.2. POST: '/invoices/due/clearOne/:invoiceID', To clear orders that is default
+// * COMPLETED * //
+app.post("/invoices/due/clearOne/:invoiceID", (req, res) => {
 	// console.log("#" + req.params.invoiceId);
-	req.params.invoiceId = "#" + req.params.invoiceId;
+	req.params.invoiceID = "#" + req.params.invoiceID;
 	Invoice.updateOne(
-		{ invoiceId: req.params.invoiceId },
+		{ invoiceId: req.params.invoiceID },
 		{
 			paymentDefault: false,
 			paymentDate: new Date(),
@@ -259,31 +293,15 @@ app.route("/Invoices/clearDue/:invoiceId").post((req, res) => {
 			console.log(err);
 		}
 	});
-	res.redirect("/Orders");
+	res.redirect("/invoices");
 });
 
-app.route("/Invoices/clearDues/:flat").post((req, res) => {
-	// console.log(req.params.flat);
-	Invoice.updateMany(
-		{ flat: req.params.flat, paymentDefault: true },
-		{
-			paymentDefault: false,
-			paymentDate: new Date(),
-			paymentMode: req.body.paymentMode,
-		}
-	).exec((err, inv) => {
-		if (!err) {
-			console.log("Documents Updated: ", inv);
-		} else {
-			console.log(err);
-		}
-	});
+// TODO: 2.3. GET: '/invoices/pdfOne/:invoiceID', Should generate an invoice pdf to download and share with customer
 
-	res.redirect("/Credits");
-});
-
-// ---------------- Credits ----------------
-app.route("/Credits").get((req, res) => {
+// * CREDIT ROUTES * //
+// TODO: 3.1. GET: '/invoices/due', Group Invoices on Flat, sort in descending order on total due amount, render the template
+// * COMPLETED * //
+app.get("/invoices/due", (req, res) => {
 	Invoice.aggregate(
 		[
 			{ $match: { paymentDefault: true } },
@@ -314,25 +332,54 @@ app.route("/Credits").get((req, res) => {
 		}
 	);
 });
+// TODO: 3.2. POST: '/invoices/due/clearOne/:invoiceID', To clear order that is default and also generate an invoice saying paid, save it in the local system and that particular date
+// * COMPLETED : 2.2 & 2.3 for pdf * //
+
+// TODO: 3.3. POST: '/invoices/due/clearMany/:flat', To clear orders that are default on selected flat and also generate an invoice saying paid, save it in the local system and that particular date
+// * COMPLETED * //
+app.route("/invoices/due/clearMany/:flat").post((req, res) => {
+	// console.log(req.params.flat);
+	Invoice.updateMany(
+		{ flat: req.params.flat, paymentDefault: true },
+		{
+			paymentDefault: false,
+			paymentDate: new Date(),
+			paymentMode: req.body.paymentMode,
+		}
+	).exec((err, inv) => {
+		if (!err) {
+			console.log("Documents Updated: ", inv);
+		} else {
+			console.log(err);
+		}
+	});
+
+	res.redirect("/invoices/due");
+});
+
+// TODO: 3.4. GET: 'invoices/pdfMany/:flat', Should generate an invoice pdf to download and share with customer of all the dues
 
 // ---------------- Dahsboard ----------------
-app.route("/Dashboard").get((req, res) => {
+app.route("/dashboard").get((req, res) => {
 	res.render("dashboard");
 });
 
-// ---------------- Inventory ----------------
-app
-	.route("/Inventory")
-	.get((req, res) => {
-		// Fetching Product Categories
-		Category.find({}, { name: 1, _id: 0 }).exec((err, categories) => {
-			if (!err) {
-				res.render("inventory", { Categories: categories });
-			}
-		});
-	})
+// * INVENTORY ROUTES * //
+// TODO: 5.1. GET: 'inventory', Get all inventory categories, render the template
+// * COMPLETED * //
+app.get("/inventory", (req, res) => {
+	// Fetching Product Categories
+	Category.find({}, { name: 1, _id: 0, id: 1 }).exec((err, categories) => {
+		if (!err) {
+			res.render("inventory", { Categories: categories });
+		}
+	});
+});
 
-	.post((req, res) => {
+// TODO: 5.2. POST: '/inventory/category/crud', Create, update, and delete category from inventory and corresponding products
+app.post("/inventory/category/crud", (req, res) => {
+	console.log(req.body);
+	if (req.body.crud === "create") {
 		//  Counting the Documents present to compute the new Category ID
 		Category.countDocuments().exec((err, count) => {
 			if (!err) {
@@ -345,191 +392,191 @@ app
 				res.redirect("/Inventory");
 			}
 		});
-	});
-
-// ---------------- Inventory:Params ----------------
-app
-	.route("/Inventory/:Category")
-	// ---------------- GET (Completed) ----------------
-	.get((req, res) => {
-		let query = { category: req.params.Category };
-		// Fetching Products of the Category requested
-		Product.find(query)
-			.sort({ _id: 1 })
-			.exec((err, products) => {
-				if (!err) {
-					// Fetchin Category Collection to iterate over Sub Categories
-					Category.find({ name: req.params.Category }).exec((err, list) => {
-						if (!err) {
-							// Sub Categories attribute from the Categories Collection for the Category requested
-							var subCategory = list[0].sub_category;
-							// Create a dictionary to store the products for each sub-category
-							var productsBySubCategory = {};
-							// Iterating Over Sub Category List
-							subCategory.forEach((sub_category) => {
-								// If there are no products in the Category requested, Empty key:value pair in the dictionary are initialized
-								if (!products.length) {
-									productsBySubCategory[sub_category] = [];
-								} else {
-									// If products are present in the Category requested, Empty key:value pair in the dictionary are intialized
-									if (!productsBySubCategory[sub_category]) {
-										productsBySubCategory[sub_category] = [];
-									}
-									products.forEach((product) => {
-										//console.log('Product Sub Category: ', product.sub_category, ', Iter Sub Category: ', sub_category);
-										// Key:Value are pushed into dictionary based on the Sub Category match criteria
-										if (product.sub_category === sub_category) {
-											//console.log('reached');
-											productsBySubCategory[sub_category].push(product);
-										}
-									});
-								}
-							});
-							//console.log(productsBySubCategory);
-							res.render("category", {
-								categoryTitle: req.params.Category,
-								data: productsBySubCategory,
-								categoryID: list[0].id,
-							});
-						}
-					});
-				}
-			});
-	})
-	// ---------------- POST (Completed) ----------------
-	.post((req, res) => {
-		// ---------------- Add Products (Completed) ----------------
-		if (req.body.formName === "addProduct") {
-			//console.log(req.body);
-			// body is being converted to array so that it can be sliced
-			let data = req.body;
-			data = Object.entries(data);
-			let start = data.findIndex(([key]) => key === "id");
-			let end = data.findIndex(([key]) => key === "units");
-			let slicedData = data.slice(start, end + 1);
-			//console.log(slicedData);
-			// after slicing it is being converted to JSON so that it can be pushed at desired location
-			let jsonData = Object.fromEntries(slicedData);
-			console.log(jsonData);
-			Product.create(jsonData, (err, doc) => {
-				if (err) {
-					console.log(err);
-				} else {
-					console.log("Document Saved:", doc);
-				}
-			});
-			// } else if (req.body.formName === "deleteProduct") {
-			// ---------------- Delete Product ----------------
-		} else if (req.body.formName === "addSubCategory") {
-			// ---------------- Add sub_category (Completed) ----------------
-			console.log(req.body);
-			// New Sub Category is appended into the requested Category
-			Category.updateOne(
-				{ name: req.body.categoryName },
-				{ $push: { sub_category: req.body.newSubCategoryName } },
-				(err, doc) => {
-					if (err) {
-						console.log(err);
-					} else {
-						console.log("Document Updated: ", doc);
-					}
-				}
-			);
-		} else if (req.body.formName === "deleteSubCategory") {
-			// ---------------- Delete sub_category (Completed) ----------------
-			//console.log(req.body);
-			// Selected Sub Category is deleted from the requested Category
-			Category.updateOne(
-				{ name: req.params.Category },
-				{ $pull: { sub_category: req.body.subCategoryName } },
-				(err, doc) => {
-					if (err) {
-						console.log(err);
-					} else {
-						console.log("Document Updated: ", doc);
-					}
-				}
-			);
-			// TODO: Delete corresponding sub_category products from products collection
-			Product.deleteMany(
-				{ sub_category: req.body.subCategoryName },
-				(err, doc) => {
-					if (err) {
-						console.log(err);
-					} else {
-						console.log("Document Updated: ", doc);
-					}
-				}
-			);
-		} else {
-			console.log(req.body);
-		}
-		res.redirect("/Inventory/" + req.params.Category);
-	})
-
-	// ---------------- UPDATE (Completed) ----------------
-	.patch((req, res) => {
-		// ---------------- Sub Category (Completed) ----------------
-		if ("old_name" in req.body) {
-			let query = {
-				name: "Fruits & Vegetables",
-				sub_category: req.body.old_name,
-			};
-			let update = { $set: { "sub_category.$": req.body.sub_name } };
-			console.log(query, update);
-			// Updating Sub Category Name
-			Category.updateOne(query, update, function (err, doc) {
-				if (err) {
-					console.log(err);
-				} else {
-					console.log("Document Updated: ", doc);
-				}
-			});
-
-			// ---------------- Product Info (Completed) ----------------
-		} else {
-			console.log("Update Prod Details ", req.body);
-			// Saving Product Name to filter the query
-			let prod_name = req.body.prod_name;
-			let data = req.body;
-			// Product Name Key:Value Pair is deleted from the Data Dictionary
-			delete data.prod_name;
-			let query = { name: prod_name };
-			let update = { $set: data };
-			console.log(query, update);
-			// Updating Product Parameter
-			Product.updateOne(query, update, (err, doc) => {
-				if (err) {
-					console.log(err);
-				} else {
-					console.log("Document Updated: ", doc);
-				}
-			});
-		}
-	});
-
-app.post("/getFlats", async (req, res) => {
-	let payload = req.body.payload.trim();
-	let regex1 = /([a-zA-Z]+)(\d+)/;
-	let regex2 = /^([a-zA-Z])\s+[0-9]+$/;
-	if (regex1.test(payload)) {
-		// console.log("Match! " + payload);
-		payload = payload.replace(/^([a-zA-Z])(\d+)/, "$1 $2");
-		// console.log("Regex: " + payload);
-	} else if (regex2.test(payload)) {
-		// console.log("Match! " + payload);
-		payload = payload.replace(/([a-zA-Z])(\s+)?(\d+)/, "$1 $3");
-		// console.log("Regex: " + payload);
-	} else {
-		// console.log("No Match! " + payload);
 	}
-	let search = await Flat.find({
-		flat: { $regex: new RegExp(payload, "i") },
-	})
-		.limit(3)
-		.exec();
-	// console.log(search);
-	res.send({ payload: search });
+	// Update the Category
+	// Delete the Category
+});
+
+// TODO: 5.3. GET: '/inventory/category/:categoryID/products', Get all products corresponding to category
+// * COMPLETED * //
+app.get("/inventory/category/:categoryID/products", (req, res) => {
+	Category.find({ id: req.params.categoryID }).exec((err, category) => {
+		if (!err) {
+			let query = { category: category[0].name };
+			// Fetching Products of the Category requested
+			Product.find(query)
+				.sort({ _id: 1 })
+				.exec((err, products) => {
+					if (!err) {
+						// Sub Categories attribute from the Categories Collection for the Category requested
+						// console.log(category[0].sub_category);
+						var subCategory = category[0].sub_category;
+						// Create a dictionary to store the products for each sub-category
+						var productsBySubCategory = {};
+						// Iterating Over Sub Category List
+						subCategory.forEach((sub_category) => {
+							// If there are no products in the Category requested, Empty key:value pair in the dictionary are initialized
+							if (!products.length) {
+								productsBySubCategory[sub_category] = [];
+							} else {
+								// If products are present in the Category requested, Empty key:value pair in the dictionary are intialized
+								if (!productsBySubCategory[sub_category]) {
+									productsBySubCategory[sub_category] = [];
+								}
+								products.forEach((product) => {
+									//console.log('Product Sub Category: ', product.sub_category, ', Iter Sub Category: ', sub_category);
+									// Key:Value are pushed into dictionary based on the Sub Category match criteria
+									if (product.sub_category === sub_category) {
+										//console.log('reached');
+										productsBySubCategory[sub_category].push(product);
+									}
+								});
+							}
+						});
+						//console.log(productsBySubCategory);
+						res.render("category", {
+							categoryTitle: category[0].name,
+							data: productsBySubCategory,
+							categoryID: parseInt(req.params.categoryID),
+						});
+					}
+				});
+		}
+	});
+});
+
+// TODO: 5.4. POST: '/inventory/category/:categoryID/subcategory/crud', Create, Update, Delete sub category & corresponding products
+// * COMPLETED * //
+app.post("/inventory/category/:categoryID/subcategory/crud", (req, res) => {
+	console.log(req.params, req.body);
+	if (req.body.crud === "create") {
+		Category.updateOne(
+			{ id: req.params.categoryID },
+			{ $push: { sub_category: req.body.newSubCategoryName } },
+			(err, doc) => {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log("Document Updated: ", doc);
+				}
+			}
+		);
+	} else if (req.body.crud === "update") {
+		let query = {
+			id: req.params.categoryID,
+			sub_category: req.body.oldSubCategoryName,
+		};
+		let update = { $set: { "sub_category.$": req.body.newSubCategoryName } };
+		console.log(query, update);
+		// Updating Sub Category Name
+		Category.updateOne(query, update, function (err, doc) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log("Document Updated: ", doc);
+			}
+		});
+		// TODO: Update Product's sub category info
+		// * COMPLETED * //
+		Product.updateMany(
+			{ sub_category: req.body.oldSubCategoryName },
+			{ sub_category: req.body.newSubCategoryName },
+			(err, doc) => {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log("Document Updated: ", doc);
+				}
+			}
+		);
+	} else if (req.body.crud === "del") {
+		Category.updateOne(
+			{ id: req.params.categoryID },
+			{ $pull: { sub_category: req.body.oldSubCategoryName } },
+			(err, doc) => {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log("Document Updated: ", doc);
+				}
+			}
+		);
+		// TODO: Delete corresponding sub_category products from products collection
+		// * COMPLETED * //
+		Product.deleteMany(
+			{ sub_category: req.body.subCategoryName },
+			(err, doc) => {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log("Document Updated: ", doc);
+				}
+			}
+		);
+	}
+	res.redirect("/inventory/category/" + req.params.categoryID + "/products");
+});
+
+// TODO: 5.5. POST: '/inventory/category/:categoryID/product/:productID/:crud', Create, update, and delete products
+// * COMPLETED * //
+app.post("/inventory/category/:categoryID/product/:id/crud", (req, res) => {
+	console.log(req.params, req.body);
+	if (req.body.crud === "create") {
+		req.body.id = req.params.id;
+		delete req.body.crud;
+		Category.find({ id: req.params.categoryID }, (err, category) => {
+			if (!err) {
+				req.body.category = category[0].name;
+				// console.log(req.body);
+				Product.create(req.body, (err, doc) => {
+					if (err) {
+						console.log(err);
+					} else {
+						console.log("Document Saved:", doc);
+					}
+				});
+			} else {
+				console.log(err);
+			}
+		});
+	} else if (req.body.crud === "update") {
+		req.body.id = req.params.id;
+		delete req.body.crud;
+		Category.find({ id: req.params.categoryID }, (err, category) => {
+			if (!err) {
+				req.body.category = category[0].name;
+				Product.updateOne(
+					{ id: req.params.id },
+					{ $set: req.body },
+					(err, doc) => {
+						if (err) {
+							console.log(err);
+						} else {
+							console.log("Document Updated: ", doc);
+						}
+					}
+				);
+			} else {
+				console.log(err);
+			}
+		});
+	} else if (req.body.crud === "del") {
+		Product.deleteOne({ id: req.params.id }, (err, doc) => {
+			if (!err) {
+				console.log("Document Updated: ", doc);
+			} else {
+				console.log(err);
+			}
+		});
+	}
+	res.redirect("/Inventory/category/" + req.params.categoryID + "/products");
+});
+
+// TODO: 5.6. GET: '/inventory/outOfStock', Should generate a PDF for the list of products which are out of stock
+app.get("/inventory/outOfStock", (req, res) => {
+	Product.find({ quantity: 0 }, (err, doc) => {
+		console.log(doc);
+	});
 });
 
 // ---------------- PORT ----------------
