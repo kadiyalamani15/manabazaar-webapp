@@ -76,7 +76,7 @@ const subCategoryProducts = data[sub_category]; %>
 			class="btn btn-primary"
 			data-bs-toggle="modal"
 			data-bs-target="#productModal<%=iter%>">
-			Add Product
+			<i class="fa-regular fa-square-plus"></i>
 		</button>
 
 		<div class="modal" id="productModal<%=iter%>" tabindex="-1">
@@ -396,11 +396,12 @@ const subCategoryProducts = data[sub_category]; %>
 	<thead>
 		<tr>
 			<th scope="col" class="col-1">Product ID</th>
-			<th scope="col" class="col-3">Product Name</th>
+			<th scope="col" class="col-2">Product Name</th>
 			<th scope="col" class="text-end col-2">MRP</th>
 			<th scope="col" class="text-end col-2">SP</th>
-			<th scope="col" class="text-center col-2">Stock Qty</th>
-			<th scope="col" class="text-center col-2">Units</th>
+			<th scope="col" class="text-end col-2">CP</th>
+			<th scope="col" class="text-center col-1">Stock Qty</th>
+			<th scope="col" class="text-end col-2">Units</th>
 		</tr>
 	</thead>
 </table>

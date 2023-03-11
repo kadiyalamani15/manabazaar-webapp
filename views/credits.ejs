@@ -124,7 +124,7 @@
 					<% if (dueFlat.totalDues !== 1) {%>
 					<div class="modal-footer">
 						<form
-							action="/Invoices/clearDue/<%=invoice.invoiceId.slice(1)%>"
+							action="/invoices/due/clearOne/<%=invoice.invoiceId.slice(1)%>"
 							method="post">
 							<span>Clear this Due: </span>
 							<button

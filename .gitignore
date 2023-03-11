@@ -1,3 +1,7 @@
 node_modules
 notes.txt
 testing.html
+invoice-template.ejs
+your-invoice-name.pdf
+hn.js
+hn.pdf
