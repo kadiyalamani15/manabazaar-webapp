@@ -4,7 +4,53 @@ const ejs = require("ejs");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const axios = require("axios");
-const niceInvoice = require("nice-invoice");
+const fs = require("fs");
+const path = require("path");
+const puppeteer = require("puppeteer");
+const { parse } = require("path");
+
+// ---------------- Folder Creation ----------------
+const year = new Date().getFullYear();
+const month = new Intl.DateTimeFormat("en-US", { month: "long" }).format(
+	new Date()
+);
+const day = new Date().getDate();
+
+const yearPath = year.toString();
+const monthPath = path.join(yearPath, month);
+const dayPath = path.join(monthPath, day.toString());
+
+const logsPath = path.join(dayPath, "logs");
+const pdfsPath = path.join(dayPath, "pdfs");
+const invoicesPath = path.join(pdfsPath, "invoices");
+const outOfStockPath = path.join(pdfsPath, "out-of-stock");
+
+const paidPath = path.join(invoicesPath, "paid");
+const duePath = path.join(invoicesPath, "due");
+const dueClearedPath = path.join(invoicesPath, "due-cleared");
+const onePath = path.join(dueClearedPath, "one");
+const manyPath = path.join(dueClearedPath, "many");
+
+const makeDirectoryIfNotExists = (directoryPath) => {
+	if (!fs.existsSync(directoryPath)) {
+		fs.mkdirSync(directoryPath);
+	}
+};
+
+makeDirectoryIfNotExists(yearPath);
+makeDirectoryIfNotExists(monthPath);
+makeDirectoryIfNotExists(dayPath);
+
+makeDirectoryIfNotExists(logsPath);
+makeDirectoryIfNotExists(pdfsPath);
+makeDirectoryIfNotExists(invoicesPath);
+makeDirectoryIfNotExists(outOfStockPath);
+
+makeDirectoryIfNotExists(paidPath);
+makeDirectoryIfNotExists(duePath);
+makeDirectoryIfNotExists(dueClearedPath);
+makeDirectoryIfNotExists(onePath);
+makeDirectoryIfNotExists(manyPath);
 
 // ---------------- Initializing Node Express App ----------------
 const app = express();
@@ -174,7 +220,7 @@ app
 	})
 	// TODO: 1.2. POST: '/', Submit the Invoice Order, Generate Invoice PDF, store it in datewise folder in local system, in future send it to the customer's Whatsapp Account or App Account
 	// * COMPLETED * //
-	.post((req, res) => {
+	.post(async (req, res) => {
 		// TODO: Compute the timestamp and the elapsed time of submissions
 		// * COMPLETED * //
 		const now = new Date();
@@ -198,20 +244,70 @@ app
 		req.body["billTime.taken"] = timeTaken;
 		req.body.paymentDate = "";
 		req.body.paymentDefault = true;
+		var currentInvoicePath = duePath;
 		if (req.body.paymentMode == "2" || req.body.paymentMode == "3") {
 			req.body.paymentDefault = false;
 			req.body.paymentDate = new Date();
+			currentInvoicePath = paidPath;
 		}
 		req.body.invoiceItems = JSON.parse(req.body.invoiceItems);
 		req.body.invoiceDate = new Date();
 		// console.log(req.body);
 		// TODO: Submit data to the database
 		// * COMPLETED * //
-		Invoice.create(req.body, (err, doc) => {
+		Invoice.create(req.body, async (err, doc) => {
 			if (err) {
 				console.log(err);
 			} else {
 				console.log("Document Saved:", doc);
+				try {
+					req.body.invoiceSubTotal = parseFloat(req.body.invoiceSubTotal);
+					req.body.invoiceTax = parseFloat(req.body.invoiceTax);
+					req.body.invoiceDeliveryCharge = parseFloat(
+						req.body.invoiceDeliveryCharge
+					);
+					req.body.invoiceDiscount = parseFloat(req.body.invoiceDiscount);
+					req.body.invoiceTotal = parseFloat(req.body.invoiceTotal);
+					const template = fs.readFileSync(
+						"./views/invoice-template.ejs",
+						"utf8"
+					);
+					const html = ejs.render(template, { invoice: req.body });
+
+					// Launch Puppeteer and create a new page
+					const browser = await puppeteer.launch();
+					const page = await browser.newPage();
+
+					// Set page content and options
+					await page.setContent(html);
+					await page.emulateMediaType("screen");
+					await page.setViewport({
+						width: 595,
+						height: 842,
+						deviceScaleFactor: 1,
+					});
+
+					// Generate PDF from page content and save to file
+					await page.pdf({
+						path: currentInvoicePath + "/" + req.body.invoiceId + ".pdf",
+						format: "A4",
+						printBackground: true,
+						margin: {
+							top: "20mm",
+							right: "20mm",
+							bottom: "20mm",
+							left: "20mm",
+						},
+					});
+
+					// Close the browser
+					await browser.close();
+
+					console.log("PDF generated successfully!");
+					res.redirect("/");
+				} catch (err) {
+					console.log(err);
+				}
 			}
 		});
 		req.body.invoiceItems.forEach((prod) => {
@@ -230,7 +326,6 @@ app
 				});
 			});
 		});
-		res.redirect("/");
 	});
 
 // TODO: 1.3. GET: '/getFlats', Gets all flats
@@ -297,6 +392,39 @@ app.post("/invoices/due/clearOne/:invoiceID", (req, res) => {
 });
 
 // TODO: 2.3. GET: '/invoices/pdfOne/:invoiceID', Should generate an invoice pdf to download and share with customer
+app.get("/invoices/pdfOne/:invoiceID", async (req, res) => {
+	req.params.invoiceID = "#" + req.params.invoiceID;
+	// try {
+	const inv = await Invoice.findOne({ invoiceId: req.params.invoiceID });
+	res.render("invoice-template", { invoice: inv });
+	// }
+	// 	const template = fs.readFileSync("./views/invoice-template.ejs", "utf8");
+	// 	const html = ejs.render(template, { invoice: inv });
+
+	// 	// Launch Puppeteer and create a new page
+	// 	const browser = await puppeteer.launch();
+	// 	const page = await browser.newPage();
+
+	// 	// Set page content and options
+	// 	await page.setContent(html);
+	// 	await page.emulateMediaType("screen");
+	// 	await page.setViewport({ width: 595, height: 842, deviceScaleFactor: 1 });
+
+	// 	// Generate PDF from page content and save to file
+	// 	await page.pdf({
+	// 		path: "document.pdf",
+	// 		format: "A4",
+	// 		printBackground: true,
+	// 	});
+
+	// 	// Close the browser
+	// 	await browser.close();
+
+	// 	res.send("PDF generated successfully!");
+	// } catch (err) {
+	// 	console.log(err);
+	// }
+});
 
 // * CREDIT ROUTES * //
 // TODO: 3.1. GET: '/invoices/due', Group Invoices on Flat, sort in descending order on total due amount, render the template
