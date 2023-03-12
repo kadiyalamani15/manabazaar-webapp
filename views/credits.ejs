@@ -11,10 +11,7 @@
 	</thead>
 	<tbody>
 		<% dueFlats.forEach((dueFlat, index)=>{%>
-		<tr
-			type="button"
-			data-bs-toggle="modal"
-			data-bs-target="#dueInvoicesModal<%=index%>">
+		<tr style="cursor: pointer" onclick="showModal('<%=index%>')">
 			<td><%=dueFlat._id%></td>
 			<td class="text-center"><%=dueFlat.totalDues%></td>
 			<td class="text-end">
@@ -38,12 +35,7 @@
 					aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<% dueFlat.dueInvoices.forEach((invoice, index) => { const date = new
-				Date(invoice.invoiceDate); const timeString =
-				date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit',
-				minute: '2-digit' }); const dateString =
-				date.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year:
-				'numeric' });%>
+				<% dueFlat.dueInvoices.forEach((invoice, index) => { %>
 				<div class="modal-content my-3">
 					<div class="modal-header">
 						<h1 class="modal-title fs-5"><%=invoice.invoiceId%></h1>
@@ -51,6 +43,11 @@
 					<div class="modal-body">
 						<div class="d-flex justify-content-between align-items-center">
 							<span class="col-auto">Mobile#: <%=invoice.contact%></span>
+							<%const date = new Date(invoice.invoiceDate); const timeString =
+							date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit',
+							minute: '2-digit' }); const dateString =
+							date.toLocaleDateString('en-US', { month: 'long', day: '2-digit',
+							year: 'numeric' }); %>
 							<span class="col-auto"><%=timeString%></span>
 						</div>
 						<div class="d-flex justify-content-between align-items-center">
@@ -195,4 +192,12 @@
 		</div>
 	</div>
 </div>
-<%})%> <%- include("partials/footer"); -%>
+<% }) %>
+<script>
+	function showModal(index) {
+		var modalID = "#dueInvoicesModal" + index;
+		console.log(modalID);
+		$(modalID).modal("show");
+	}
+</script>
+<%- include("partials/footer"); -%>

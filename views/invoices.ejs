@@ -10,10 +10,7 @@
 	</thead>
 	<tbody id="tbody-orders">
 		<% invoices.forEach((invoice, index) => { %>
-		<tr
-			type="button"
-			data-bs-toggle="modal"
-			data-bs-target="#invoiceModal<%=index%>">
+		<tr style="cursor: pointer" onclick="showModal('<%=index%>')">
 			<%const date = new Date(invoice.invoiceDate); const timeString =
 			date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit', minute:
 			'2-digit' }); const dateString = date.toLocaleDateString('en-US', { month:
@@ -162,4 +159,12 @@ date.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year:
 		</ul>
 	</nav>
 </div> -->
+
+<script>
+	function showModal(index) {
+		var modalID = "#invoiceModal" + index;
+		$(modalID).modal("show");
+	}
+</script>
+
 <%- include("partials/footer"); -%>

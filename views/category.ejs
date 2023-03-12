@@ -220,10 +220,7 @@ const subCategoryProducts = data[sub_category]; %>
 		<% var lastProductID = '' %> <% subCategoryProducts.forEach((product) => {
 		%>
 		<!-- Exisitng Product Listing Row -->
-		<tr
-			type="button"
-			data-bs-toggle="modal"
-			data-bs-target="#editProduct<%=product.id%>">
+		<tr onclick="showModal('<%=product.id%>')" style="cursor: pointer">
 			<th scope="row"><%= product.id %></th>
 			<td name="name" data-prod="<%= product.name %>"><%= product.name %></td>
 			<td class="text-end" name="price.MRP" data-prod="<%= product.name %>">
@@ -421,5 +418,10 @@ const subCategoryProducts = data[sub_category]; %>
 			form.reset();
 		});
 	});
+
+	function showModal(productID) {
+		var modalID = "#editProduct" + productID;
+		$(modalID).modal("show");
+	}
 </script>
 <%- include("partials/footer"); -%>
