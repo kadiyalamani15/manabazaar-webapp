@@ -5,3 +5,6 @@ invoice-template.ejs
 your-invoice-name.pdf
 hn.js
 hn.pdf
+.DS_Store
+document.pdf
+invoice.pdf
