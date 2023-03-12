@@ -103,26 +103,9 @@
             <div class="d-flex justify-content-around my-5 payment-btns">
                 <button type="submit" class="btn btn-outline-danger w-25" name="paymentMode" value="1">UNPAID</button>
                 <button type="submit" class="btn btn-outline-warning w-25" name="paymentMode" value="2">CASH</button>
-                <button type="submit" class="btn btn-success w-25" name="paymentMode" value="3">UPI</button>
+				<button type="submit" class="btn btn-success w-25" name="paymentMode" value="3">UPI</button>
+                <input type="hidden" name="paymentMode" id='paymentMode' value="0" required>
                 <input id="billingStartTime" type="hidden" name="billTime.start">
-                <button type="submit" class="hiddenSubmitBtn prod-modal" data-bs-toggle="modal" data-bs-target="#prodModal"></button>
-                <!-- Modal -->
-                <div class="modal fade" id="prodModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Error</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Add Items to Cart!
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Okay</button>
-                    </div>
-                    </div>
-                </div>
-                </div>
             </div>
         </form>
         <div class="d-flex justify-content-between">
@@ -130,6 +113,23 @@
             <h6><%=todaySalesCount%></h6>
             <h6><%=todaySalesAmountTotal?.toLocaleString("en-IN", {style: 'currency', currency:'INR'})%></h6>
         </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="prodModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Error</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Add Items to Cart!
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Okay</button>
+        </div>
+        </div>
+    </div>
     </div>
 
     <div class="col-6 overflow-y-auto products">
@@ -412,10 +412,12 @@
         var hiddenField1 = document.getElementById('invoiceItems');
         var hiddenField2 = document.getElementById('invoiceTotal');
         if (hiddenField1.value != "" && hiddenField2.value != 0) {
+            console.log(e.submitter.name);
+            $('#paymentMode').val(e.submitter.value);
             e.target.submit();
         } else {
             // Trigger Modal dialog
-            document.querySelector(".prod-modal").click();
+            $('#prodModal').modal('show');
         }
     })
 
