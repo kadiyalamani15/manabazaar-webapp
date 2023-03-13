@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
+			crossorigin="anonymous" />
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+			crossorigin="anonymous"></script>
+	</head>
+	<body class="container-fluid d-flex flex-column vh-100">
+		<div class="invoice-header my-3">
+			<div class="row">
+				<div class="col-6">
+					<div class="row">
+						<img src="" />
+						<h2>ManaBazaar</h2>
+					</div>
+				</div>
+				<div class="col-6 text-end">
+					<p>
+						Income Tax Quarters<br />Banjara Hills Road No12<br />Hyderabad 500
+						034<br />Telangana INDIA
+					</p>
+				</div>
+			</div>
+			<h4 class="text-center"><%=flat%>'s Credits Clearance</h4>
+		</div>
+		<% dues[0].dueInvoices.forEach(invoice => { %>
+		<div>
+			<h5 class="text-center">INVOICE: <%=invoice.invoiceId%></h5>
+			<div class="row my-3">
+				<%const date = new Date(invoice.invoiceDate); var timeString =
+				date.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit',
+				minute: '2-digit' }); var dateString = date.toLocaleDateString('en-US',
+				{ month: 'long', day: '2-digit', year: 'numeric' });%>
+				<div class="col-6 text-end">
+					<span>Mobile#:</span><br />
+					<span
+						>Person: <%= invoice.person == 1 ? 'Sir' : invoice.person == 2 ?
+						'Madam' : invoice.person == 3 ? 'Children' : invoice.person == 4 ?
+						'Driver' : invoice.person == 5 ? 'Maid' : invoice.person == 6 ?
+						'Security' : invoice.person == 7 ? 'Shop Delivery' : null %></span
+					><br />
+				</div>
+				<div class="col-6">
+					<span>Invoice Time: <%=timeString%></span><br />
+					<span>Invoice Date: <%=dateString%></span><br />
+				</div>
+			</div>
+			<div class="flex-grow-1">
+				<div class="invoice-details my-3">
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col">Item</th>
+								<th scope="col" class="text-center">Quantity</th>
+								<th scope="col" class="text-end">Each</th>
+								<th scope="col" class="text-end">Sub Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							<% invoice.invoiceItems.forEach(item => { %>
+							<tr>
+								<td><%=item.name%></td>
+								<td class="text-center"><%=item.qty%></td>
+								<td class="text-end">
+									<%=item.price.SP?.toLocaleString("en-IN", {style:"currency",
+									currency: "INR"})%>
+								</td>
+								<td class="text-end">
+									<%=item.itemSPSubTotal?.toLocaleString("en-IN",
+									{style:"currency", currency: "INR"})%>
+								</td>
+							</tr>
+							<% }) %>
+						</tbody>
+					</table>
+				</div>
+				<div class="invoice-summary text-end py-3">
+					<h6>
+						Items/Qty: <%=invoice.invoiceItemsCount + '/' + invoice.invoiceQty%>
+					</h6>
+					<h6>
+						Sub Total: <%=invoice.invoiceSubTotal?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+					<h6>
+						Included Total Tax: <%=invoice.invoiceTax?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+					<h6>
+						Delivery Charges:
+						<%=invoice.invoiceDeliveryCharge?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+					<h6>
+						Discount: (-) <%=invoice.invoiceDiscount?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+					<h6>
+						Total: <%=invoice.invoiceTotal?.toLocaleString("en-IN",
+						{style:"currency", currency: "INR"})%>
+					</h6>
+				</div>
+			</div>
+		</div>
+		<%}) %>
+		<hr />
+		<div class="due-summary text-end py-3">
+			<h6>
+				Items/Qty: <%= dues[0].totalDueItems + '/' + dues[0].totalDueQty%>
+			</h6>
+			<h6>
+				Sub Total: <%=dues[0].totalDueSubTotal?.toLocaleString("en-IN",
+				{style:"currency", currency: "INR"})%>
+			</h6>
+			<h6>
+				Included Total Tax: <%=dues[0].totalDueTax?.toLocaleString("en-IN",
+				{style:"currency", currency: "INR"})%>
+			</h6>
+			<h6>
+				Delivery Charges:
+				<%=dues[0].totalDueDeliveryCharges?.toLocaleString("en-IN",
+				{style:"currency", currency: "INR"})%>
+			</h6>
+			<h6>
+				Discount: (-) <%=dues[0].totalDueDiscount?.toLocaleString("en-IN",
+				{style:"currency", currency: "INR"})%>
+			</h6>
+			<h6>
+				Grand Total: <%=dues[0].totalDueAmount?.toLocaleString("en-IN",
+				{style:"currency", currency: "INR"})%>
+			</h6>
+		</div>
+		<div class="text-center">
+			<%const paidDate = new Date(); timeString =
+			paidDate.toLocaleTimeString('en-US', { hour12: true, hour: '2-digit',
+			minute: '2-digit' }); dateString = paidDate.toLocaleDateString('en-US', {
+			month: 'long', day: '2-digit', year: 'numeric' });%>
+			<p>Due Cleared On: <%=`${timeString} ${dateString}`%></p>
+		</div>
+		<div class="footer text-center">
+			<footer>
+				<h6>Thank you for shopping at ManaBazaar!</h6>
+			</footer>
+		</div>
+	</body>
+</html>

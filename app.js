@@ -7,7 +7,6 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const puppeteer = require("puppeteer");
-const { parse } = require("path");
 
 // ---------------- Folder Creation ----------------
 const year = new Date().getFullYear();
@@ -373,6 +372,7 @@ app.get("/invoices", (req, res) => {
 // * COMPLETED * //
 app.post("/invoices/due/clearOne/:invoiceID", (req, res) => {
 	// console.log("#" + req.params.invoiceId);
+	console.log(req.params, req.body);
 	req.params.invoiceID = "#" + req.params.invoiceID;
 	Invoice.updateOne(
 		{ invoiceId: req.params.invoiceID },
@@ -384,46 +384,64 @@ app.post("/invoices/due/clearOne/:invoiceID", (req, res) => {
 	).exec((err, inv) => {
 		if (!err) {
 			console.log("Document Updated: ", inv);
+			Invoice.findOne(
+				{ invoiceId: req.params.invoiceID },
+				async (err, bill) => {
+					if (err) {
+						console.log(err);
+					} else {
+						try {
+							const template = fs.readFileSync(
+								"./views/invoice-template.ejs",
+								"utf8"
+							);
+							const html = ejs.render(template, { invoice: bill });
+							// Launch Puppeteer and create a new page
+							const browser = await puppeteer.launch();
+							const page = await browser.newPage();
+
+							// Set page content and options
+							await page.setContent(html);
+							await page.emulateMediaType("screen");
+							await page.setViewport({
+								width: 595,
+								height: 842,
+								deviceScaleFactor: 1,
+							});
+
+							/// Generate PDF from page content and save to file
+							await page.pdf({
+								path: onePath + "/" + bill.invoiceId + ".pdf",
+								format: "A4",
+								printBackground: true,
+								margin: {
+									top: "20mm",
+									right: "20mm",
+									bottom: "20mm",
+									left: "20mm",
+								},
+							});
+
+							// Close the browser
+							await browser.close();
+
+							console.log("PDF generated successfully!");
+							console.log("Previous Route: " + req.headers.referer.slice(21));
+							if (req.headers.referer.slice(21) !== "/invoices") {
+								res.redirect("/invoices/due");
+							} else {
+								res.redirect("/invoices");
+							}
+						} catch (err) {
+							console.log(err);
+						}
+					}
+				}
+			);
 		} else {
 			console.log(err);
 		}
 	});
-	res.redirect("/invoices");
-});
-
-// TODO: 2.3. GET: '/invoices/pdfOne/:invoiceID', Should generate an invoice pdf to download and share with customer
-app.get("/invoices/pdfOne/:invoiceID", async (req, res) => {
-	req.params.invoiceID = "#" + req.params.invoiceID;
-	// try {
-	const inv = await Invoice.findOne({ invoiceId: req.params.invoiceID });
-	res.render("invoice-template", { invoice: inv });
-	// }
-	// 	const template = fs.readFileSync("./views/invoice-template.ejs", "utf8");
-	// 	const html = ejs.render(template, { invoice: inv });
-
-	// 	// Launch Puppeteer and create a new page
-	// 	const browser = await puppeteer.launch();
-	// 	const page = await browser.newPage();
-
-	// 	// Set page content and options
-	// 	await page.setContent(html);
-	// 	await page.emulateMediaType("screen");
-	// 	await page.setViewport({ width: 595, height: 842, deviceScaleFactor: 1 });
-
-	// 	// Generate PDF from page content and save to file
-	// 	await page.pdf({
-	// 		path: "document.pdf",
-	// 		format: "A4",
-	// 		printBackground: true,
-	// 	});
-
-	// 	// Close the browser
-	// 	await browser.close();
-
-	// 	res.send("PDF generated successfully!");
-	// } catch (err) {
-	// 	console.log(err);
-	// }
 });
 
 // * CREDIT ROUTES * //
@@ -461,34 +479,99 @@ app.get("/invoices/due", (req, res) => {
 	);
 });
 // TODO: 3.2. POST: '/invoices/due/clearOne/:invoiceID', To clear order that is default and also generate an invoice saying paid, save it in the local system and that particular date
-// * COMPLETED : 2.2 & 2.3 for pdf * //
+// * COMPLETED : 2.2 for pdf * //
 
 // TODO: 3.3. POST: '/invoices/due/clearMany/:flat', To clear orders that are default on selected flat and also generate an invoice saying paid, save it in the local system and that particular date
 // * COMPLETED * //
-app.route("/invoices/due/clearMany/:flat").post((req, res) => {
+app.post("/invoices/due/clearMany/:flat", (req, res) => {
 	// console.log(req.params.flat);
-	Invoice.updateMany(
-		{ flat: req.params.flat, paymentDefault: true },
-		{
-			paymentDefault: false,
-			paymentDate: new Date(),
-			paymentMode: req.body.paymentMode,
-		}
-	).exec((err, inv) => {
-		if (!err) {
-			console.log("Documents Updated: ", inv);
-		} else {
-			console.log(err);
-		}
-	});
+	Invoice.aggregate(
+		[
+			{ $match: { flat: req.params.flat, paymentDefault: true } },
+			{
+				$group: {
+					_id: null,
+					totalDueItems: { $sum: "$invoiceItemsCount" },
+					totalDueQty: { $sum: "$invoiceQty" },
+					totalDueSubTotal: { $sum: "$invoiceSubTotal" },
+					totalDueTax: { $sum: "$invoiceTax" },
+					totalDueDeliveryCharges: { $sum: "$invoiceDeliveryCharge" },
+					totalDueDiscount: { $sum: "$invoiceDiscount" },
+					totalDueAmount: { $sum: "$invoiceTotal" },
+					dueInvoices: { $push: "$$ROOT" },
+				},
+			},
+		],
+		async (err, dues) => {
+			if (err) {
+				console.log(err);
+			} else {
+				try {
+					// console.log(dues, dues[0].dueInvoices);
+					const template = fs.readFileSync(
+						"./views/credits-invoice.ejs",
+						"utf8"
+					);
+					const html = ejs.render(template, {
+						flat: req.params.flat,
+						dues: dues,
+					});
+					// Launch Puppeteer and create a new page
+					const browser = await puppeteer.launch();
+					const page = await browser.newPage();
 
-	res.redirect("/invoices/due");
+					// Set page content and options
+					await page.setContent(html);
+					await page.emulateMediaType("screen");
+					await page.setViewport({
+						width: 595,
+						height: 842,
+						deviceScaleFactor: 1,
+					});
+
+					// Generate PDF from page content and save to file
+					await page.pdf({
+						path: manyPath + "/" + req.params.flat + ".pdf",
+						format: "A4",
+						printBackground: true,
+						margin: {
+							top: "20mm",
+							right: "20mm",
+							bottom: "20mm",
+							left: "20mm",
+						},
+					});
+
+					// Close the browser
+					await browser.close();
+
+					console.log("PDF generated successfully!");
+					Invoice.updateMany(
+						{ flat: req.params.flat, paymentDefault: true },
+						{
+							paymentDefault: false,
+							paymentDate: new Date(),
+							paymentMode: req.body.paymentMode,
+						}
+					).exec((err, inv) => {
+						if (!err) {
+							console.log("Documents Updated: ", inv);
+						} else {
+							console.log(err);
+						}
+					});
+
+					res.redirect("/invoices/due");
+				} catch (err) {
+					console.log(err);
+				}
+			}
+		}
+	);
 });
 
-// TODO: 3.4. GET: 'invoices/pdfMany/:flat', Should generate an invoice pdf to download and share with customer of all the dues
-
 // ---------------- Dahsboard ----------------
-app.route("/dashboard").get((req, res) => {
+app.get("/dashboard", (req, res) => {
 	res.render("dashboard");
 });
 
