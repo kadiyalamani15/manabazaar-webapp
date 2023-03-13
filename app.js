@@ -780,14 +780,53 @@ app.post("/inventory/category/:categoryID/product/:id/crud", (req, res) => {
 			}
 		});
 	}
-	res.redirect("/Inventory/category/" + req.params.categoryID + "/products");
+	res.redirect("/inventory/category/" + req.params.categoryID + "/products");
 });
 
 // TODO: 5.6. GET: '/inventory/outOfStock', Should generate a PDF for the list of products which are out of stock
-app.get("/inventory/outOfStock", (req, res) => {
-	Product.find({ quantity: 0 }, (err, doc) => {
-		console.log(doc);
-	});
+// * COMPLETED * //
+app.get("/inventory/outOfStock", async (req, res) => {
+	try {
+		const products = await Product.find({ quantity: 0 }).exec();
+
+		if (!products || products.length === 0) {
+			res.send("No products out of stock.");
+			return;
+		}
+
+		const html = await ejs.renderFile("./views/out-of-stock.ejs", { products });
+
+		const browser = await puppeteer.launch();
+		const page = await browser.newPage();
+
+		await page.setContent(html);
+		await page.emulateMediaType("screen");
+		await page.setViewport({
+			width: 595,
+			height: 842,
+			deviceScaleFactor: 1,
+		});
+		const pdfBuffer = await page.pdf({
+			path: outOfStockPath + "/out-of-stock.pdf",
+			format: "A4",
+			printBackground: true,
+			margin: {
+				top: "20mm",
+				right: "20mm",
+				bottom: "20mm",
+				left: "20mm",
+			},
+		});
+		await browser.close();
+		res.set({
+			"Content-Type": "application/pdf",
+			"Content-Disposition": "attachment; filename=outOfStock.pdf",
+		});
+		res.send(pdfBuffer);
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Error generating out of stock report.");
+	}
 });
 
 // ---------------- PORT ----------------

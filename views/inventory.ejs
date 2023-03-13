@@ -51,16 +51,18 @@
 		</div>
 	</div>
 	<div class="col">
-		<button type="button" class="btn btn-primary" id="out-of-stock">
-			<i class="fa-solid fa-boxes-stacked"></i>
-		</button>
+		<form action="/inventory/outOfStock" method="GET">
+			<button type="submit" class="btn btn-primary" id="out-of-stock">
+				<i class="fa-solid fa-boxes-stacked"></i>
+			</button>
+		</form>
 	</div>
 </div>
 <div class="row d-flex justify-content-around card-deck">
 	<% Categories.forEach(function(category) { %>
 	<!-- TODO: Edit and Remove Icons and Forms for each category, should delete from category model, then corresponding products from product model, similarly for edit -->
 	<div class="col-4 py-3">
-		<a href="/Inventory/category/<%=category.id%>/products">
+		<a href="/inventory/category/<%=category.id%>/products">
 			<div class="card">
 				<img
 					class="card-img-top"
@@ -87,11 +89,6 @@
 			// Reset the form elements
 			form.reset();
 		});
-	});
-
-	// Out of Stock Request
-	document.getElementById("out-of-stock").addEventListener("click", () => {
-		axios.get("/inventory/outOfStock");
 	});
 </script>
 
