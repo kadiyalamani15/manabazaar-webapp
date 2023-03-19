@@ -96,6 +96,8 @@ ManaBazaar has a folder management system as follows:
 12. [ ] Product Duplicate Check
 13. [ ] Validation Logic: Cost Price < Selling Price < Market Retail Price and
 14. [ ] Authentication
+15. [ ] Include Screenshots in Github Readme
+16. [ ] Explain Mongoose Models
 
 ## Installation
 
