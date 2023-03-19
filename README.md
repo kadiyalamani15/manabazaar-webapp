@@ -1,5 +1,5 @@
 # ManaBazaar - Grocery Store's Web App for Invoice Generation and Inventory Management
-
+The technology stack used in ManaBazaar is:
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)](https://www.mongodb.com/)
 [![ExpressJS](https://img.shields.io/badge/Server-ExpressJS-blue)](https://expressjs.com/)
 [![NodeJS](https://img.shields.io/badge/Backend-NodeJS-green)](https://nodejs.org/en/)
@@ -11,7 +11,6 @@ ManaBazaar is a system designed for invoice generation and inventory management 
 ## Table of Contents
 - [App Routes](#app-routes)
 - [Folder Management System](#folder-management-system)
-- [Technology Stack](#technology-stack)
 - [ToDo List](#todo-list)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -21,42 +20,42 @@ ManaBazaar is a system designed for invoice generation and inventory management 
 ## App Routes
 
 ### 1. Invoice
-- GET: '/'
+- `GET: '/'`
   - Get products, process the template to showcase products and invoice, today's sales count and amount.
-- POST: '/'
+- `POST: '/'`
   - Submit the Invoice Order, Generate Invoice PDF, store it in datewise folder in local system, in future send it to the customer's Whatsapp Account or App Account.
-- GET: '/getFlats'
+- `GET: '/getFlats'`
   - Gets all flats.
 
 ### 2. Invoices
-- GET: '/orders' --> invoices
+- `GET: '/invoices'`
   - Get all orders in descending order sorted on date, render the template.
-- POST: '/invoices/due/clearOne/:invoiceID'
+- `POST: '/invoices/due/clearOne/:invoiceID'`
   - To clear orders that are default and update the old PDF with Paid On info in the current date due paid one folder.
 
 ### 3. Credits
-- GET: '/invoices/due'
+- `GET: '/invoices/due'`
   - Group Invoices on Flat, sort in descending order on total due amount, render the template.
-- POST: '/invoices/due/clearOne/:invoiceID'
+- `POST: '/invoices/due/clearOne/:invoiceID'`
   - To clear orders that are default and also generate an invoice saying paid, save it in the local system and that particular date.
-- POST: '/invoices/due/clearMany/:flat'
+- `POST: '/invoices/due/clearMany/:flat'`
   - To clear orders that are default on selected flat and also generate an invoice saying paid, save it in the local system on that particular date.
 
 ### 4. Dashboard
 - Under development.
 
 ### 5. Inventory
-- GET: '/inventory'
+- `GET: '/inventory'`
   - Get all inventory categories, render the template.
-- POST: '/inventory/category/:categoryID/:crud'
+- `POST: '/inventory/category/:categoryID/:crud'`
   - Create, update, and delete category from inventory and corresponding products.
-- GET: '/inventory/category/:categoryID/products'
+- `GET: '/inventory/category/:categoryID/products'`
   - Get all products corresponding to category.
-- POST: '/inventory/category/:categoryID/subcategory/crud'
+- `POST: '/inventory/category/:categoryID/subcategory/crud'`
   - Create, Update, Delete sub category & corresponding products.
-- POST: '/inventory/category/:categoryID/product/:productID/crud'
+- `POST: '/inventory/category/:categoryID/product/:productID/crud'`
   - Create, update, and delete products.
-- GET: '/inventory/noStock'
+- `GET: '/inventory/noStock'`
   - Should generate a PDF for the list of products which are out of stock.
 
 ## Folder Management System
@@ -80,19 +79,6 @@ ManaBazaar has a folder management system as follows:
           - example: flat-invoiceID.pdf
     - Out of Stock
       - example: outOfStock.pdf
-
-## Technology Stack
-
-The technology stack used in ManaBazaar is:
-
-- MongoDB
-- Express JS with Node.js server
-- EJS
-- HTML and CSS
-- Bootstrap
-
-![technology badges](https://img.shields.io/badge/technology-mongodb%20%7C%20express%20js%20%7C%20node.js%20%7C%20ejs%20%7C%20html%20%7C%20css%20%7C%20bootstrap-blue)
-
 
 ## To Do List
 
@@ -135,4 +121,4 @@ Contributions are welcome! If you would like to contribute, please follow these 
 
 ## Credits
 
-This project was created by Kadiyala Mani with the help of Udemy's Coursework: The Complete 2023 Web Development Bootcamp by Dr. Angela Yu.
+This project was created by Kadiyala Mani with the help of Udemy's Coursework: `The Complete 2023 Web Development Bootcamp by Dr. Angela Yu`.
