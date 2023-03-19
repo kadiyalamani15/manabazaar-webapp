@@ -1,5 +1,5 @@
 # ManaBazaar - Grocery Store's Web App for Invoice Generation and Inventory Management
-The technology stack used in ManaBazaar is:
+
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)](https://www.mongodb.com/)
 [![ExpressJS](https://img.shields.io/badge/Server-ExpressJS-blue)](https://expressjs.com/)
 [![NodeJS](https://img.shields.io/badge/Backend-NodeJS-green)](https://nodejs.org/en/)
