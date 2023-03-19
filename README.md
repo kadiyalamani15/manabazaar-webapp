@@ -1,4 +1,4 @@
-# ManaBazaar - Grocery Store's System Design
+# ManaBazaar - Grocery Store's Web App
 
 System designed for invoice generation and inventory management for ManaBazaar grocery store. It uses MongoDB for database and runs on Express JS with Node.js server. The system uses EJS for rendering templates and HTML and CSS, Bootstrap for styling.
 
@@ -55,16 +55,16 @@ System designed for invoice generation and inventory management for ManaBazaar g
 
 ## To Do List
 
-1. Dashboard
-2. Product Image
-3. Logo
-4. Navbar Revamp
-5. UI/UX Revamp
-6. Code Refactoring
-7. Go For Production
-8. Make Mobile Friendly Version
-9. Setup WhatsApp Business API to send invoices to customers
-10. Input Validations
-11. Stock Update logs to be stored
-12. Product Duplicate Check
-13. Validation Logic: Cost Price < Selling Price < Market Retail Price and
+1. [ ] Dashboard
+2. [ ] Product Image
+3. [ ] Logo
+4. [ ] Navbar Revamp
+5. [ ] UI/UX Revamp
+6. [ ] Code Refactoring
+7. [ ] Go For Production
+8. [ ] Make Mobile Friendly Version
+9. [ ] Setup WhatsApp Business API to send invoices to customers
+10. [ ] Input Validations
+11. [ ] Stock Update logs to be stored
+12. [ ] Product Duplicate Check
+13. [ ] Validation Logic: Cost Price < Selling Price < Market Retail Price and
