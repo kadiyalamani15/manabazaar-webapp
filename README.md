@@ -1,5 +1,11 @@
 # ManaBazaar - Grocery Store's Web App
 
+[![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)](https://www.mongodb.com/)
+[![ExpressJS](https://img.shields.io/badge/Server-ExpressJS-blue)](https://expressjs.com/)
+[![NodeJS](https://img.shields.io/badge/Backend-NodeJS-green)](https://nodejs.org/en/)
+[![EJS](https://img.shields.io/badge/Template-EJS-orange)](https://ejs.co/)
+[![Bootstrap](https://img.shields.io/badge/Frontend-Bootstrap-purple)](https://getbootstrap.com/)
+
 System designed for invoice generation and inventory management for ManaBazaar grocery store. It uses MongoDB for database and runs on Express JS with Node.js server. The system uses EJS for rendering templates and HTML and CSS, Bootstrap for styling.
 
 ## App Routes
