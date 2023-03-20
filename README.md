@@ -98,6 +98,7 @@ ManaBazaar has a folder management system as follows:
 14. [ ] Authentication
 15. [ ] Include Screenshots in Github Readme
 16. [ ] Explain Mongoose Models
+17. [ ] Sequence Diagram
 
 ## Installation
 
@@ -123,4 +124,4 @@ Contributions are welcome! If you would like to contribute, please follow these 
 
 ## Credits
 
-This project was created by Kadiyala Mani with the help of Udemy's Coursework: `The Complete 2023 Web Development Bootcamp by Dr. Angela Yu`.
+This project was created by Kadiyala Mani with the help of Udemy's Coursework: [The Complete 2023 Web Development Bootcamp](https://www.udemy.com/course/the-complete-web-development-bootcamp/) by Dr. Angela Yu.
