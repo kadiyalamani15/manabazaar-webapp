@@ -104,7 +104,6 @@
                 <button type="submit" class="btn btn-outline-danger w-25" name="paymentMode" value="1">UNPAID</button>
                 <button type="submit" class="btn btn-outline-warning w-25" name="paymentMode" value="2">CASH</button>
 				<button type="submit" class="btn btn-success w-25" name="paymentMode" value="3">UPI</button>
-                <input type="hidden" name="paymentMode" id='paymentMode' value="0" required>
                 <input id="billingStartTime" type="hidden" name="billTime.start">
             </div>
         </form>
@@ -412,8 +411,6 @@
         var hiddenField1 = document.getElementById('invoiceItems');
         var hiddenField2 = document.getElementById('invoiceTotal');
         if (hiddenField1.value != "" && hiddenField2.value != 0) {
-            console.log(e.submitter.name);
-            $('#paymentMode').val(e.submitter.value);
             e.target.submit();
         } else {
             // Trigger Modal dialog
